@@ -1,0 +1,20 @@
+
+
+
+
+
+
+
+
+
+
+                    Github
+                    Docker
+
+backend                 
+                        
+^                           
+|
+v
+
+s3      <->          app server        <->          user

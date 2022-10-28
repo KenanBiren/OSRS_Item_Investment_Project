@@ -1,0 +1,3 @@
+the data folder under samples will contain a sample data folder. Scripts in 
+test folders utilize this sample data to edit the index dates or data for 
+tests.

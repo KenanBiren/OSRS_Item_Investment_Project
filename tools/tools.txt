@@ -1,0 +1,13 @@
+tools folder will contain useful scripts and information that doesn't belong
+under build, tests, samples, or ref.
+
+
+
+
+
+using separate window in ec2 to keep scripts running even after connection closes:
+
+
+tmux new -s mywindow
+
+tmux a -t mywindow

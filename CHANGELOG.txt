@@ -1,0 +1,62 @@
+FORMAT:
+
+New Version Number: vX.X.X
+Date, Time: YYYY-MM-DD HHmm timezone
+Author: name
+Title: (MAJOR/MINOR/BUGFIX) title
+Description: detailed description of changes
+Deprecations or Removals: detailed description of any components that become
+deprecated or fully removed on this version
+--------------------------------------------------------------------------------
+
+
+
+UPCOMING CHANGES:
+    -add a task to verify analysis output after analysis is run
+    -implement docker compose to containerize scripts
+    -implement factorial design during daily analysis
+    -create a user interface
+
+
+
+
+
+
+
+
+
+
+
+
+ex.
+
+
+New Version: v1.1.1
+Date, Time: 2022-06-15 1743 PST
+Author: Kenan Biren
+Title: (BUGFIX) Bug on post_scrape_analysis.py
+Description: ...
+Deprecations or Removals: ...
+--------------------------------------------------------------------------------
+
+
+New Version: v1.1.0
+Date, Time: 2022-06-01 0455 PST
+Author: Kenan Biren
+Title: (MINOR) Improve run time efficiency of process_backend.py
+Description: ...
+Deprecations or Removals: ...
+--------------------------------------------------------------------------------
+
+
+New Version: v1.0.0
+Date, Time: 2022-05-26 1351 PST
+Author: Kenan Biren
+Title: (MAJOR) Implement user interface
+Description: ...
+Deprecations or Removals: ...
+--------------------------------------------------------------------------------
+
+
+New Version: v0.0.0
+...

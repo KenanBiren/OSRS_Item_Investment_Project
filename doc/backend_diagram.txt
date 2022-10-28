@@ -1,0 +1,28 @@
+etl diagram showing docker images, ec2, s3 bucket, github
+
+
+            Github 
+                v
+            Docker                         frontend                     s3
+                v
+
+                
+extract                 transform                                       load
+
+
+full scrape       ->    format for analysis -> analyze
+incremental scrape  ->    combine with todays and format -> analyze
+
+                                                                        -> upload to s3
+
+
+
+
+
+
+                                                
+
+
+
+
+
