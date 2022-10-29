@@ -1,2 +1,12 @@
-This script reads if local data folder has been updated within past 5 days
-if not, edit new_items.csv to trigger full scrape
+import csv
+
+
+# used to trigger full scrape
+
+with open('/Users/kenanbiren/Documents/raw_links_csv/new_items.csv', mode='w') as f:
+    writer = csv.writer(f)
+    writer.writerow(['new items?', 'y'])
+    f.close()
+
+
+
