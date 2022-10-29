@@ -1,19 +1,20 @@
-This script is the final step in process_backed.py. It takes all the
-results of the analysis and sends them to a folder in s3 labeled 
-today's date
 
 
 
 
-triggered by: process_backend.py
 
-next task: -
 
-inputs: none (contents taken from 14day_price.csv and 14day_vol.csv
 
-outputs: sends folder titled *current date* containing /data folder contents
-to s3
+1. send local /data/ folder to s3 /data/
+2. send local /data/ to local folder for today's data ~/xxxx/xx/xx/
 
-data storage used: s3, EC2 local (Docker /data volume)
+2. if new_week_trigger:
+       upload week folder to s3
 
-test scripts needed:
+       reformat/rename local stored data
+            create new folder titled "next week start date" value from status file
+            delete folder titled "current week start date" value from status file
+       update week start dates in status_file.csv (this will reset new_week_trigger)
+       trigger weekly_scrape.py
+
+3. upload status_file.csv to s3
