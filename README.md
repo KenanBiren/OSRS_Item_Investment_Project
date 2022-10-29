@@ -1,22 +1,40 @@
-Runescape Item Analysis: 
+Runescape Item Investment Analysis
+
 Providing users with item-by-item investment analysis for Runescape items.
 
-Introduction: Brief summary of Runescape and the Grand Exchange. Examples of 
-current similar products 
 
 
-Project Description:
+Introduction: 
 
-This project is built off of my previous project, which is an ELT
-pipeline that performs investment analysis on Runescape item data.
-Link:
+Old School Runescape (OSRS) is an online game was realesed in February 2013 as a reboot of an old version of the game Runescape. Millions of people play the game, as it offers a wide variety of activities like going on quests, fighting monsters and other players, and levelling up your character's skills. OSRS players can trade each other items for gold coins, and the game has an automated trading system so players can buy or sell items without having to schedule a time to meet and trade.
 
-This project uses data collection and analysis methods from the previous project. 
-The purpose of this project is to serve users a bigger picture of investment
-analysis on specific items that they are considering. To do this, users will
-search for a specific item, and the analysis will be applied to that item.
-Additionally, a graph displaying past-two-week price/volume interactions
-and near-real time data scraped from ge-tracker.com is presented.
+The automated trading system is called the Grand Exchange. One player puts their item into the system, one player their coins, and it conducts the trade. Because almost all trades happen on the Grand Exchange, players often in try to observe trends in price, and invest in items that will go up. Some players make millions of coins each day by choosing the correct items. One might ask, how do they make their decision? The purpose of this project is to tell an investor if a specific item is a good investment or not. 
+
+
+There are many sources that give data on items that investors might want. Here are the sources of data for this project (opened on example item Abyssal Whip).
+
+
+Official Old School Runescape website:
+https://secure.runescape.com/m=itemdb_oldschool/Abyssal+whip/viewitem?obj=4151
+This website shows the daily average price and volume per item. The average daily value is what is best to perform data analysis on the past week, two weeks, or month worth of data, if that is the plan (it is).
+
+
+Old School wiki database:
+https://prices.runescape.wiki/osrs/item/4151
+This site shows up-to-date price/volume data and a few other basic fields like "Buy Limit". This site is a fast API that is a great source to get a list of all items in the game, with the ability to use the API to pre-filter based on specific values (this may be utiilized in the future).
+
+
+ge-tracker.com:
+https://www.ge-tracker.com/item/abyssal-whip
+This site shows up-to-date data and also includes unique fields like "Buying Quantity (1 hour)" and "Selling Quantity (1 hour)"
+
+As you can see, each of these sources provides something a little different. Investment prediction is one of the most complex topics out there, so investors need as much information as possible to make decisions. This project performs a daily market analysis of the OSRS item market, and 
+applies that data to any item searched, predicting how much it will change in price today. Additionally, upon search for an item, data from ge-scraper.com is extracted and presented, and a graph showing the interaction between price and volume in the last two weeks is presented.
+
+The daily market analysis section is based off of my previous ELT pipeline. 
+link:
+I made this into an entirely new project because I am not utilizing AWS Redshift or Eventbridge any more. The previous project was great for getting my feet wet and learning about AWS: moving data across softwares, using access control policies, etc. But this game only has 3841 items, it doesn't need Redshift. Investors, however, need a broad view of each potential investment. As such, I nixed Redshift and shifted focus towards building an app. 
+
 
 examples of outputs:
 images
