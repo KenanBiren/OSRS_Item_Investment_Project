@@ -2,7 +2,7 @@ import boto3
 import time
 import datetime
 import os
-
+from s3_download_dir import download_s3_folder
 
 
 
@@ -28,9 +28,12 @@ def check_files():
 
 
     if last_updated_str != cd_str:
-        s3 download status_file and get y/n and next scrape data
+        s3 download status_file and get y/n and next scrape date
         if next_scrape_date ==  tom_str:
-            s3 download data folder and replace
+            download_s3_folder('BUCKET_NAME', '/data/', '/data/stage/')
+            # sanity check for file content size here
+            os.system('*COMMAND TO DELETE /data/ AND REPLACE WITH /data/stage/*')
+            os.system('*COMMAND TO DELETE /data/stage/*')
         else:
             print("Today's investment analysis has not yet been updated. Using yesterday's.\n")
 
