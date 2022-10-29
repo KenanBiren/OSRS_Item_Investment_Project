@@ -20,7 +20,7 @@ import csv
 import boto3
 import datetime
 import os
-
+from s3_upload_dir import uploadDirectory
 # process_daily_scrape (runs on ec2)
 #
 #
@@ -49,7 +49,7 @@ with open('*PATH TO new_items.csv ON EC2', mode='r') as f:
 #----------------------------------------------
 
 
-## edit scrape started
+## record scrape time started here
 if new_item_trigger:
     os.system('NAVIGATE TO FULL SPIDER FOLDER; scrapy crawl *SPIDER NAME* -o scrapy_output.csv')
     os.system('COMMAND TO RUN FULL PRE ANALYSIS')
@@ -84,6 +84,7 @@ with open('*PATH TO status_file.csv ON EC2*', mode='w') as outfile:
     writer = csv.writer(outfile)
     for row in status_data:
         writer.writerow(row)
+    s3.upload_fileobj(outfile, "BUCKET_NAME", "status_file.csv")
     outfile.close()
 
 
@@ -92,57 +93,12 @@ with open('*PATH TO status_file.csv ON EC2*', mode='w') as outfile:
 #----------------------------------------
 # trigger analysis and upload of files to s3
 
-os.system('command to trigger analysis script')
-os.system('command to trigger data_summary script')
-os.system('command to save data titled current day to folder titled current week')
-os.system('command to trigger send_to_s3 script')
+os.system('*COMMAND TO TRIGGER ANALYSIS SCRIPT')
+os.system('*COMMAND TO TRIGGER DATA SUMMARY SCRIPT')
+os.system('*COMMAND TO SAVE DATA TITLED CURRENT DATA TO FOLDER TITLED CURRENT WEEK*')
 #current_week = status_data[7][1]
+os.system('*COMMAND TO TRIGGER send_to_s3 SCRIPT*')
 
-
-
-
-
-#--------------------------------------------------------
-
-
-current_date = datetime.date.today()
-cd_str = current_date.strftime('%Y/%m/%d, %H:%M')
-yest_date = current_date - datetime.timedelta(days=1)
-yd_str = yest_date.strftime('%Y/%m/%d, %H:%M')
-tom_date = current_date + datetime.timedelta(days=1)
-td_str = tom_date.strftime('%Y/%m/%d, %H:%M')
-new_current_week = tom_date.strftime('%Y/%m/%d')
-new_next_week = (tom_date + datetime.timedelta(days=7)).strftime('%Y/%m/%d')
-
-
-#------------------------------------------------------------
-# updates status_file after files have been uploaded to s3
-status_data = []
-with open('*PATH TO status_file.csv ON EC2*', mode='r') as outfile:
-    reader = csv.reader(outfile)
-    for row in reader:
-        status_data.append(row)
-    outfile.close() ## is this block necessary? test
-
-print(status_data)
-
-if new_week_trigger:
-    status_data[7][1] = new_current_week
-    status_data[8][1] = new_next_week
-    os.system('command to make new folder titled new_current_week')
-    os.system('command to delete folder titled last current week')
-    os.system('command to run weekly link scrape')
-
-status_data[6][1] = datetime.date.today().strftime('%Y/%m/%d, %H:%M')
-
-
-with open('/Users/kenanbiren/Documents/User Interface Script/status_file.csv', mode='w') as outfile:
-    writer = csv.writer(outfile)
-    for row in status_data:
-        writer.writerow(row)
-    outfile.close()
-
-# upload status_file to s3
 
 #------------------------------------------------------
 # reset new_item_trigger
