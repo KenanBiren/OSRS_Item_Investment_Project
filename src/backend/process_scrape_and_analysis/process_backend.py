@@ -1,3 +1,10 @@
+import csv
+import boto3
+import datetime
+import os
+from s3_upload_dir import uploadDirectory
+
+
 # This script reads from the new_items.csv to see if we need to run a full scrape
 # to gather data on the new items or just scrape today's data, then triggers it
 
@@ -7,32 +14,14 @@
 
 
 
-
-
-
-
-# updates status file -> prepares raw data for analysis -> performs analysis -> 
-# saves in appropriate places -> updates status file -> 
-# updates new_items.csv (saved locally) if needed
-
-
-import csv
-import boto3
-import datetime
-import os
-from s3_upload_dir import uploadDirectory
-# process_daily_scrape (runs on ec2)
-#
-#
-# read new_items.csv and record new_items_trigger
-# write lines to initially edit status file scrape stats
+# read new_items.csv to get new_items_trigger
 # trigger scrape
-# update status_file analysis running: y/n to start analysis-
-# decide pre-analysis process using new_items_trigger
+# update status_file analysis running: y/n, scrape stats, and analysis start time
+# decide / run pre-analysis process from new_items_trigger
 # trigger analysis
-# decide post analysis storage targets using new_week_trigger
-# edit new_items.csv if needed
-# update status_file analysis stats and current week/next week if needed
+# trigger send_to_s3, which handles data transfer
+# edit new_items.csv to 'n' if needed
+
 
 
 
@@ -40,30 +29,28 @@ from s3_upload_dir import uploadDirectory
 #-------------------------------------------
 new_item_trigger = False
 new_week_trigger = False
-with open('*PATH TO new_items.csv ON EC2', mode='r') as f:
+with open('/home/ec2-user/OSRS_Item_Investment_App/new_items.csv', mode='r') as f:
     reader = csv.reader(f)
     for row in reader:
         if row[2] == 'y':
             new_item_trigger = True
 
 #----------------------------------------------
-
-
-## record scrape time started here
+# record "scrape time started" here
 if new_item_trigger:
-    os.system('NAVIGATE TO FULL SPIDER FOLDER; scrapy crawl *SPIDER NAME* -o scrapy_output.csv')
-    os.system('COMMAND TO RUN FULL PRE ANALYSIS')
+    os.system('cd /home/ec2-user/OSRS_Item_Investment_App/scripts/full_scrape/full_scrape/; scrapy crawl full_scrape -o scrapy_output.csv')
+    os.system('cd /home/ec2-user/OSRS_Item_Investment_App/scripts/;python3 full_pre_analysis.py')
 else:
-    os.system('NAVIGATE TO INCR SPIDER FOLDER; scrapy crawl *SPIDER NAME* -o scrapy_output.csv')
-    os.system('COMMAND TO RUN INCREMENTAL PRE ANALYSIS')
+    os.system('/home/ec2-user/OSRS_Item_Investment_App/scripts/incr_scrape/incr_scrape/ ; scrapy crawl incr_scrape -o scrapy_output.csv')
+    os.system('cd /home/ec2-user/OSRS_Item_Investment_App/scripts/;python3 incr_pre_analysis.py')
 
-## edit scrape ended and next scrape date in status_file here
+
 #------------------------------------------------------
-## function to update status_file analysis running and start time below
+# update status_file analysis running y/n and start time
 
 status_data = []
 
-with open('*PATH TO status_file.csv ON EC2*', mode='r') as outfile:
+with open('/home/ec2-user/OSRS_Item_Investment_App/status_file.csv', mode='r') as outfile:
     reader = csv.reader(outfile)
     for row in reader:
         status_data.append(row)
@@ -80,33 +67,39 @@ status_data[5][1] = cd_str
 if status_data[8][1] == td_str:
     new_week_trigger = True
 
-with open('*PATH TO status_file.csv ON EC2*', mode='w') as outfile:
+
+# edit and upload status file to s3
+with open('/home/ec2-user/OSRS_Item_Investment_App/status_file.csv', mode='w') as outfile:
     writer = csv.writer(outfile)
     for row in status_data:
         writer.writerow(row)
-    s3.upload_fileobj(outfile, "BUCKET_NAME", "status_file.csv")
+    s3.upload_fileobj(outfile, "osrs-item-investment-app", "status_file.csv")
     outfile.close()
 
 
-# upload to s3
+
 
 #----------------------------------------
 # trigger analysis and upload of files to s3
+curr_wk = str(status_data[7][1])
+command = 'cp /home/ec2-user/OSRS_Item_Investment_App/data/ /home/ec2-user/OSRS_Item_Investment_App/Week of ' 
++ curr_wk
+os.system('python3 daily_analysis.py')
+os.system('python3 create_data_summary.py')
+os.system(command)
+os.system('python3 send_to_s3.py')
 
-os.system('*COMMAND TO TRIGGER ANALYSIS SCRIPT')
-os.system('*COMMAND TO TRIGGER DATA SUMMARY SCRIPT')
-os.system('*COMMAND TO SAVE DATA TITLED CURRENT DATA TO FOLDER TITLED CURRENT WEEK*')
-#current_week = status_data[7][1]
-os.system('*COMMAND TO TRIGGER send_to_s3 SCRIPT*')
 
 
-#------------------------------------------------------
-# reset new_item_trigger
-if new_item_trigger == True:
-    with open('/Users/kenanbiren/Documents/User Interface Script/new_items.csv', mode='w') as f:
+
+# reset new_items.csv
+if (new_item_trigger):
+    with open("/home/ec2-user/OSRS_Item_Investment_App/new_items.csv", 'w') as f:
         writer = csv.writer(f)
         writer.writerow(['new items?', 'n'])
         f.close()
+
+
 
 
 
