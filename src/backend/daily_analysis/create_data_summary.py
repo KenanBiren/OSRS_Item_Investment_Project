@@ -2,6 +2,7 @@ import csv
 import pandas as pd
 import datetime
 
+# This script uses analysis_table.csv to create the day's data_summary.csv
 
 
 fields = ['two_day_run_p', 'three_day_run_p', 'five_day_run_p',
@@ -11,8 +12,8 @@ fields = ['two_day_run_p', 'three_day_run_p', 'five_day_run_p',
 data = []
 current_date = datetime.date.today().strftime('%Y/%m/%d')
 data.append(current_date)
-## this script reads the analysis_table and build's today's data summary
-df = pd.read_csv('/Users/kenanbiren/Documents/Data/analysis_table.csv')
+
+df = pd.read_csv('/home/ec2-user/OSRS_Item_Investment_App/data/analysis_table.csv')
 
 
 
@@ -27,7 +28,7 @@ for n in range(len(fields)):
     data.append(round(number, 5))
 
 
-with open('/Users/kenanbiren/Documents/Data/data_summary.csv', mode='w') as f:
+with open('/home/ec2-user/OSRS_Item_Investment_App/data/data_summary.csv', mode='w') as f:
     writer = csv.writer(f)
 
     writer.writerow(['date'] + fields)

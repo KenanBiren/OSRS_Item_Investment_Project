@@ -9,7 +9,7 @@ import timedelta
 ## the analysis_table from them
 
 
-
+# calculate data for run attributes
 def get_run_data(price_list, vol_list):
     two_day_run_p = 0
     three_day_run_p = 0
@@ -77,7 +77,7 @@ def get_run_data(price_list, vol_list):
             two_day_run_v, three_day_run_v, five_day_run_v, seven_day_run_v]
 
 
-
+# calculate data for avg attributes
 def get_avg_data(price_list, vol_list):
     one_day_avg_p = (price_list[0] - price_list[1]) / (price_list[1])
     three_day_avg_p = (price_list[0] - price_list[3]) / (price_list[3])
@@ -98,26 +98,16 @@ def get_avg_data(price_list, vol_list):
 
 
 
-
-
-
-
-
-
-
-
-
-
-#check csvs for correct date
+# code to run
 working_df = {}
 
-price_df = pd.read_csv('/Users/kenanbiren/Documents/Data/14day_price.csv')
-vol_df = pd.read_csv('/Users/kenanbiren/Documents/Data/14day_vol.csv')
+price_df = pd.read_csv('/home/ec2-user/OSRS_Item_Investment_App/data/14day_price.csv')
+vol_df = pd.read_csv('/home/ec2-user/OSRS_Item_Investment_App/data/14day_vol.csv')
 
 
 
 current_date = datetime.date.today()
-
+# list of column names of scrapy_output.csv so the dataframe columns can be renamed
 old_head = ['name']
 new_head = ['name', '_0', '_1', '_2', '_3', '_4', '_5', '_6', '_7',
             '_8', '_9', '_10', '_11', '_12', '_13', '_14',]
@@ -125,7 +115,7 @@ for d in range(15):
     old_head.append((current_date - datetime.timedelta(days=d)).strftime('%Y/%m/%d'))
 print(old_head)
 
-
+# rename columns
 for i in range(1,16):
     oh = old_head[i]
     nph = 'p' + new_head[i]
@@ -133,20 +123,19 @@ for i in range(1,16):
     price_df.rename(columns={oh: nph}, inplace=True)
     vol_df.rename(columns={oh: nvh}, inplace=True)
 
-print(price_df)
-print(vol_df)
+# overwrite analysis_table.csv with column names, no data
 analysis_header = ['name', 'two_day_run_p', 'three_day_run_p', 'five_day_run_p',
                    'seven_day_run_p', 'two_day_run_v', 'three_day_run_v',
                    'five_day_run_v', 'seven_day_run_v', 'one_day_avg_p',
                    'three_day_avg_p', 'seven_day_avg_p', 'fourteen_day_avg_p',
                    'one_day_avg_v', 'three_day_avg_v', 'seven_day_avg_v',
                    'fourteen_day_avg_v']
-with open('/Users/kenanbiren/Documents/Data/analysis_table.csv', mode='w') as f:
+with open('/home/ec2-user/OSRS_Item_Investment_App/data/analysis_table.csv', mode='w') as f:
     writer = csv.writer(f)
     writer.writerow(analysis_header)
     f.close()
 
-
+# combine name, run data, and avg data
 for n in range(len(price_df.index)):
     name = price_df.loc[n, price_df.columns == 'name']
     namelist = name.tolist()
@@ -157,9 +146,9 @@ for n in range(len(price_df.index)):
     run_data = get_run_data(price_list, vol_list)
     avg_data = get_avg_data(price_list, vol_list)
 
-
+    # add name, run data, and avg data to analysis_table.csv
     row = namelist + run_data + avg_data
-    with open('/Users/kenanbiren/Documents/Data/analysis_table.csv', mode='a') as f:
+    with open('/home/ec2-user/OSRS_Item_Investment_App/data/analysis_table.csv', mode='a') as f:
         writer = csv.writer(f)
         writer.writerow(row)
         f.close()
