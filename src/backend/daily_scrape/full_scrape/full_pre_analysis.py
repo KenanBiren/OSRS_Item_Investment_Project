@@ -9,12 +9,12 @@ import datetime
 
 price_data = {}
 vol_data = {}
-with open('/Users/kenanbiren/Documents/Data/scrapy_output.csv', mode='r') as f:
+with open('/home/ec2-user/OSRS_Item_Investment_App/data/scrapy_output.csv', mode='r') as f:
     header = next(f)
     
     reader = csv.reader(f)
-    for row in reader:
-        master_list = []
+    for row in reader:      # reformat scrape output columns from alphabetical
+        master_list = []    # to chronological
         price_l = []
         vol_l = []
         sorted_price_list = []
@@ -37,12 +37,13 @@ with open('/Users/kenanbiren/Documents/Data/scrapy_output.csv', mode='r') as f:
 
 current_date = datetime.date.today()
 
-## ADD HEADERS (NAME, DATE, DATE, DATE)
+# replace chronological, variable-named columns with chronological dates
+# create 14day_price.csv and 14day_vol.csv
 header = ['name']
 for d in range(15):
     header.append((current_date - datetime.timedelta(days=d)).strftime('%Y/%m/%d'))
 
-with open('/Users/kenanbiren/Documents/Data/14day_price.csv', mode='w') as price_file:
+with open('/home/ec2-user/OSRS_Item_Investment_App/data/14day_price.csv', mode='w') as price_file:
     writer = csv.writer(price_file)
     writer.writerow(header)
     for e in price_data:
@@ -50,7 +51,7 @@ with open('/Users/kenanbiren/Documents/Data/14day_price.csv', mode='w') as price
     price_file.close()
 
 
-with open('/Users/kenanbiren/Documents/Data/14day_vol.csv', mode='w') as vol_file:
+with open('/home/ec2-user/OSRS_Item_Investment_App/data/14day_vol.csv', mode='w') as vol_file:
     writer = csv.writer(vol_file)
     writer.writerow(header)
     for e in vol_data:

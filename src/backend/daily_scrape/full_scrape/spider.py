@@ -5,7 +5,7 @@ import datetime
 from scrapy import Request
 
 
-
+# scrapy spider to extract past two weeks' price and volume data for every item
 class ExtractionSpider(scrapy.Spider):
     name = 'full_spider'
     # start_urls = ['https://secure.runescape.com/m=itemdb_oldschool/Abyssal+bludgeon/viewitem?obj=13263',
