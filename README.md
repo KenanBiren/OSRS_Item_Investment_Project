@@ -17,7 +17,7 @@ Providing investors with item-by-item investment analysis for Runescape items.
 
 ## Introduction: 
 
-Old School Runescape (OSRS) is an online game was realesed in February 2013 as a reboot of an old version of the game Runescape. Millions of people play the game, as it offers a wide variety of activities like going on quests, fighting monsters and other players, and levelling up your character's skills. OSRS players can trade each other items for gold coins, and the game has an automated trading system so players can buy or sell items without having to schedule a time to meet and trade.
+Old School Runescape (OSRS) is an online game released in February 2013 as a reboot of an 2007 version of the game Runescape. Millions of people play the game, as it offers a wide variety of activities like going on quests, fighting monsters and other players, and leveling up your character's skills. OSRS players can trade each other items for gold coins, and the game has an automated trading system so players can buy or sell items without having to schedule a time to meet and trade.
 
 The automated trading system is called the Grand Exchange. One player puts their item into the system, one player their coins, and it conducts the trade. Because almost all trades happen on the Grand Exchange, players often in try to observe trends in price, and invest in items that will go up. Some players make millions of coins each day by choosing the correct items. One might ask, how do they make their decision? 
 
@@ -26,13 +26,13 @@ The automated trading system is called the Grand Exchange. One player puts their
 ## Purpose:
 
 The purpose of this project is to help an investor decide if a specific item is a good investment or not. Investment prediction is one of the most complex topics out there, so investors need as much information as possible to make decisions. This project aims to be a useful tool for investors when deciding whether or not to invest in a specific item.
-
+What this project is:
 1. In the background: Data is scraped daily and analysis is performed on two weeks' worth of price and volume trading data from every item.
 2. When a user searches for an item, the results of this daily analysis are applied to that item to predict how much it will change in price in the next day.
-3. Item is searched and data is extracted from ge-tracker.com to provide user with the most up-to-date information on that item.
+3. Item name is searched and data is extracted from ge-tracker.com to provide user with the most up-to-date information on that item.
 4. A graph of price and volume over the past two weeks is presented. Price and volume are plotted on the same graph with different y-axes so that there interaction between the two can be viewed, as oftentimes an item's price and volume average for the day are magnitudes apart.
 
-This project uses Python - Scrapy and Pandas - in the backend to scrape web data and analyze it. Analyzed data is sent to an S3 bucket, where it can be accessed by the frontend scripts. A file name status_file.csv is used to prevent concurrent uploads and downloads to S3, and also holds some useful fields that can be used in verification tests.
+This project uses Python - Scrapy and Pandas - in the backend to scrape web data and analyze it. Analyzed data is sent to an S3 bucket, where it can be accessed by the frontend scripts. A file name status_file.csv is used to prevent concurrent upload and download request to S3, and also holds some useful fields that can be used in verification tests.
 
 
 
@@ -77,18 +77,17 @@ I made this into an entirely new project because I am not utilizing AWS Redshift
 
 ### Daily Scrape:
 
-This project uses the Scrapy framework to extract data from web sources. There are two spiders, one scrapes one days' worth of data and the other scrapes two weeks' worth of data. This is in case new items are added to the game and for the very first scrape. A pre-analysis script goes along with each spider, which takes the spider output and formats to 14day_price.csv and 14day_vol.csv to prepare for analysis.
-
+This project uses the Scrapy framework to extract data from web sources. There are two spiders, one scrapes one days' worth of data and the other scrapes two weeks' worth of data. The two week spider is for when new items are added to the game and for the very first scrape. A pre-analysis script goes along with each spider, which takes the spider output and formats to 14day_price.csv and 14day_vol.csv to prepare for analysis.
+14day_price.csv and 14day_vol.csv contain the past 14 days of price and volume data for all items, indexed by correct dates.
 
 
 
 ### Daily Analysis:
 
-The daily analysis takes 14 days of raw price and volume data
-for every item in game and calculates factors that can be analyzed for each item. 
+The daily analysis takes 14 days of raw price and volume data for every item in game and calculates attributes that can be analyzed for each item. 
 
 
-Data Analysis Calculated Fields:
+Data Analysis Calculated Attributes:
 
     two_day_run_p = whether daily trading price has increased consecutively in the past two days. 1 = True, 0 = False
     two_day_run_v = whether daily volume has increased consecutively in the past two days. 1 = True, 0 = False
@@ -109,16 +108,16 @@ Data Analysis Calculated Fields:
     fourteen_day_avg_v = ...
 
 
-The average effect of each factor on price change is calculated by averaging recent price change (same as one_day_avg_p) across all items where that factor applies. This produces a data_summary file which lists each factor, and how much % change it is expected to make in items that have that factor. For example, if the average price change for all items with two_day_run_p=1 (True) is 2%, a specific item that has two_day_run_p=1 will be assumed to increase 2% in the next day.
+The average effect of each attribute on price change is calculated by averaging recent price change (same as one_day_avg_p) across all items where that factor applies. This produces a data_summary file which lists each attribute, and how much % change it is expected to make in items that have that attribute. For example, if the average price change for all items with two_day_run_p=1 (True) is 2%, a specific item that has two_day_run_p=1 will be assumed to increase 2% in the next day.
 
-When a user searches for an item, that item's factor data is multiplied by the average effect of every factor. This results in a prediction of % price increase (or decrease).
+When a user searches for an item, that item's attribute data is multiplied by the average effect of every factor. This results in a prediction of % price increase (or decrease).
 
 
 ### Processing:
 
 Every day data is scraped from the web to prepare for analysis. Most of the time only one day's worth of data is collected and prepared for analysis. But if new items are added to the game, or the pipeline needs to start for the first time, two weeks' worth of data is collected and prepared for analysis. Once data is ready for analysis, the backend signals that data analysis has started by editing and uploading the status file to S3.
 
-Data analysis is triggered which produces today's analysis table and data summary. All files pertaining to today's data save in appropriate folders, then uploaded to S3 for use by the frontend. If tomorrow is the start of the next week, the folder for this week's data is uploaded to S3, and the weekly scrape is triggered to check if new items have been added to the game.
+Data analysis is triggered which produces today's analysis table and data summary. All files pertaining to today's data are saved in appropriate folders, then uploaded to S3 for use by the frontend. If tomorrow is the start of the next week, the folder for this week's data is also uploaded to S3, and the weekly scrape is triggered to check if new items have been added to the game.
 
 To finish everything off, the status file is uploaded to S3 to signal that the daily analysis is done, and new data is ready to be downloaded. 
 
@@ -126,7 +125,7 @@ To finish everything off, the status file is uploaded to S3 to signal that the d
 
 
 
-## Frontend Components:
+## Frontend Components and Outputs:
     Read User Input
     Update Analysis Data
     Serve Analysis Data
@@ -134,7 +133,7 @@ To finish everything off, the status file is uploaded to S3 to signal that the d
 
 ### Read User Input: 
 
-User is prompted to search for an item. If an item match, the user given a list of item names that they might have been trying to spell.
+User is prompted to search for an item. If no item matches, the user given a list of item names that they might have been trying to spell.
 
 ### Update Analysis Data: 
 
@@ -169,7 +168,7 @@ Pandas library is used to multiply item name's analysis table data with today's 
 
 
 ### Serve Near-real Data: 
-The near-real time data presented to the user is scraped on-demand from ge-tracker.com (with example data)
+The near-real time data presented to the user is scraped on-demand from ge-tracker.com using Selenium.
 
 
     Current Price: 1,554,956 (average price item being bought/sold at)
@@ -186,7 +185,7 @@ The near-real time data presented to the user is scraped on-demand from ge-track
 
     Tax: -15,679 (tax on seller)
 
-    Buy Limit: 70 (limit within 4 hour cap)
+    Buy Limit: 70 (limit within 4 hours)
 
    
 #### Note: There is a difference between buy and sell prices because the Grand Exchange works as a double auction. 
