@@ -1,8 +1,11 @@
+import boto3
+
 # https://stackoverflow.com/questions/49772151/download-a-folder-from-s3-using-boto3
 
+# This function is to download an entire folder from S3. It is called by 
+# check_for_update.py
 
 
-import boto3
 s3 = boto3.resource('s3') # assumes credentials & configuration are handled outside python in .aws directory or environment variables
 
 def download_s3_folder(bucket_name, s3_folder, local_dir=None):

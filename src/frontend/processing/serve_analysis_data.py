@@ -1,29 +1,33 @@
-# This script will extract the attribute info (calculated from daily analysis)
-# of the item searched by the user, along with the current daily summary values
-
-
-# inputs: item_name from read_user_input
-# outputs: price/volume graph, today's data for item_name
-
-
 import pandas as pd
 import matplotlib.pyplot as plt
 from tabulate import tabulate
 import numpy as np
 
 
+
+# This script will extract the attribute info (calculated from daily analysis)
+# of the item searched by the user, along with the current daily summary values
+# then present them along with a two-week price and volume graph
+
+# inputs: item_name from read_user_input.py
+# outputs: price/volume graph, today's analysis applied to item_name
+
+
+
+
+
 def analysis_data(item_name):
     working_df = {}
 
-    price_df = pd.read_csv('/Users/kenanbiren/Documents/Data/14day_price.csv')
-    vol_df = pd.read_csv('/Users/kenanbiren/Documents/Data/14day_vol.csv')
-    analysis_df = pd.read_csv('/Users/kenanbiren/Documents/Data/analysis_table.csv')
-    summary_df = pd.read_csv('/Users/kenanbiren/Documents/Data/data_summary.csv')
+    price_df = pd.read_csv('/Users/kenanbiren/OSRS_Item_Investment_app/data/14day_price.csv')
+    vol_df = pd.read_csv('/Users/kenanbiren/OSRS_Item_Investment_app/data/14day_vol.csv')
+    analysis_df = pd.read_csv('/Users/kenanbiren/OSRS_Item_Investment_app/data/analysis_table.csv')
+    summary_df = pd.read_csv('/Users/kenanbiren/OSRS_Item_Investment_app/data/data_summary.csv')
 
 
 
     #------------------------------------------------------------
-    # Print a two-y-axis graph showing price and volume data
+    # print a two-y-axis graph showing price and volume data
     data = []
     x_list = []
     price_row_df = price_df.loc[price_df['name'] == item_name]
@@ -32,10 +36,10 @@ def analysis_data(item_name):
     for num in range(15):
         x_list.append(num)
 
-    # x_list.reverse()
+   
 
     yp_list = price_row_df.loc[price_row_df['name'] == item_name].values.tolist()
-    # yp_list[0].reverse()
+    
     new_yp_list = yp_list[0]
     new_yp_list.pop()
     new_yp_list = [1544,1543,1552,1561,1560,1571,1580,1593,
@@ -43,22 +47,17 @@ def analysis_data(item_name):
 
 
     yv_list = vol_row_df.loc[vol_row_df['name'] == item_name].values.tolist()
-    # yv_list[0].reverse()
+    
     new_yv_list = yv_list[0]
     new_yv_list.pop()
     new_yv_list = [33,34.5,85.5,39.5,28.5,52.6,18,58.5,30.6,
                 85.5,45,22.8,55,34.4,30]
+
     for n in range(len(x_list)):
         data.append([x_list[n], new_yp_list[n], new_yv_list[n]])
 
 
-
-
     graph_df = pd.DataFrame(data, columns=['days_ago', 'price', 'volume'])
-
-
-
-
 
 
 
@@ -87,23 +86,25 @@ def analysis_data(item_name):
 
 
     #------------------------------------------------------------------
-    # Extract and serve analysis_table and data_summary combined info
+    # extract and serve analysis_table and data_summary combined info
 
-
+    # find analysis data on item_name
     analysis = analysis_df.loc[analysis_df['name'] == item_name].values.tolist()
 
+    # extract analysis data on item_name as list
     analysis_data = analysis[0]
     analysis_data.reverse()
     analysis_data.pop()
     analysis_data.reverse()
 
+    # extract today's summary data as a list
     summary = summary_df[:].values.tolist()
     summary_data = summary[0]
     summary_data.reverse()
     summary_data.pop()
     summary_data.reverse()
 
-
+    # apply summary data to item_name's analysis data to get expected % increase today
     sum = 0
     calculated_data = []
     changes = []
@@ -122,6 +123,7 @@ def analysis_data(item_name):
 
     sum = round(sum, 5)
 
+    # create output dictionary
     output_data = []
     has_effect = []
     fields = ['two_day_run_p', 'three_day_run_p', 'five_day_run_p',
@@ -137,7 +139,7 @@ def analysis_data(item_name):
 
 
 
-
+    # print all outputs together
     output_df = pd.DataFrame(output_data, columns=['Attribute', 'Has Effect?', 'Effect'])
     print(tabulate(output_df, headers='keys', tablefmt = 'psq1'))
     plt.show()

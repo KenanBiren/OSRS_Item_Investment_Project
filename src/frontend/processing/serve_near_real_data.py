@@ -1,13 +1,3 @@
-# This script will use selenium to search "item name" on the ge-tracker website
-# to extract Current Price, Current Offer Price, Current Sell Price, Current Tax
-# Buying Quantity (1 hour), Selling Quantity (1 hour), Buy/Sell Ratio, Buy Limit.
-
-
-
-# inputs: item_name from read_user_input
-# outputs: near-real time data points from ge-tracker.com
-
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import DesiredCapabilities
@@ -17,6 +7,19 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 import time
+
+
+# This script will use selenium to search "item name" on the ge-tracker website
+# to extract Current Price, Current Offer Price, Current Sell Price, Current Tax
+# Buying Quantity (1 hour), Selling Quantity (1 hour), Buy/Sell Ratio, Buy Limit.
+
+
+
+# inputs: item_name from read_user_input
+# outputs: near-real time data from ge-tracker.com
+
+
+
 
 
 def near_real_data(item):
@@ -29,28 +32,28 @@ def near_real_data(item):
     chrome_options.add_argument('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     link = 'https://www.ge-tracker.com/names/rune'
-
+    # open up website to search
     driver.get(link)
     time.sleep(2)
-
+    # search item_name
     text_area = driver.find_element(By.XPATH, '//*[contains(concat( " ", @class, " " ), concat( " ", "form-control", " " ))]')
     text_area.send_keys(item)
     text_area.send_keys(Keys.ENTER)
     time.sleep(2)
-
+    # click matching result
     search_results = driver.find_elements(By.CSS_SELECTOR, '.row-item-name')
     for r in search_results:
         if r.text == item:
             link = r.get_attribute('href')
             time.sleep(2)
-
+    # extract data
     driver.get(link)
-    stuff = driver.find_elements(By.CSS_SELECTOR, '.has-tooltip')
-    for d in stuff:
+    fields = driver.find_elements(By.CSS_SELECTOR, '.has-tooltip')
+    for d in fields:
         data_list.append(d.text)
     data_list = list(filter(None, data_list))
 
-    ratio = driver.find_element(By.CSS_SELECTOR, 'span.text-loss').text
+    ratio = driver.find_element(By.CSS_SELECTOR, 'span.text-profit').text
 
 
     limit = driver.find_element(By.CSS_SELECTOR, 'tr:nth-child(4) td~ td').text
@@ -67,7 +70,7 @@ def near_real_data(item):
 
 
 
-
+    print(data)
 
 
     driver.close()
