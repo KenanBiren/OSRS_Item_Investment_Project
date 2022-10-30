@@ -46,7 +46,7 @@ with DAG(
 
     t1 = SSHOperator(
      task_id="first_task",
-     command="**COMMAND TO RUN process_backend.py",
+     command="cd /home/ec2-user/OSRS_Item_Investment_App/scripts/;python3 process_backend.py",
      ssh_hook=sshHook,
      dag=dag)
     ## this is where docker commands will go to build the image before running it
