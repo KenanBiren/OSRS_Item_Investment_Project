@@ -1,2 +1,10 @@
-/ref will contain helpful web resources and documentation that were used
-during the development of this project. 
+Will contain web resources that aided the development of this project. 
+
+
+
+
+Scrapy Tutorial - https://www.youtube.com/watch?v=ve_0h4Y8nuI&list=PLhTjy8cBISEqkN-5Ku_kXG4QW33sxQo0t
+
+Pandas Documentation - https://pandas.pydata.org/docs/user_guide/index.html#user-guide
+
+Github Formatting - https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax

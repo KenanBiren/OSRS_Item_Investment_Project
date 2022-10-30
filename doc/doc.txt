@@ -1,1 +1,1 @@
-documentation and diagrams for this project
+documentation for this project
