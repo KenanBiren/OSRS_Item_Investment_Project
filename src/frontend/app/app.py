@@ -1,6 +1,6 @@
 import tkinter
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import csv
 import time
