@@ -12,7 +12,7 @@ import pandas as pd
 def read_input():
     item_list = []
                         # get current item masterlist
-    with open('data/14day_price.csv', mode='r') as f:
+    with open('../../../data/14day_price.csv', mode='r') as f:
         reader = csv.reader(f)
         for row in reader:
             item_list.append(row[0])
