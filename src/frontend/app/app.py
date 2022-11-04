@@ -12,6 +12,7 @@ import pandas as pd
 def read_input():
     item_list = []
     print(os.getcwd())
+    print(os.listdir())
                         # get current item masterlist
     with open('data/14day_price.csv', mode='r') as f:
         reader = csv.reader(f)
