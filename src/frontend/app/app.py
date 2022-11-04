@@ -94,9 +94,9 @@ def analysis_data(item_name):
         x_list.append(num)
 
    
-    print(yp_list)
-    yp_list = price_row_df.loc[price_row_df['name'] == item_name].values.tolist()
     
+    yp_list = price_row_df.loc[price_row_df['name'] == item_name].values.tolist()
+    print(yp_list)
     new_yp_list = yp_list[0]
     new_yp_list.pop()
     print(new_yp_list)
