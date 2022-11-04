@@ -14,9 +14,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: docker logout
+      run: docker logout
     - name: docker login
       run:
-        docker login -u ${{secrets.DOCKER_USER}} -p ${{secrets.DOCKER_PASSWORD}} docker.io
+        docker login -u ${{secrets.DOCKER_USER}} -p ${{secrets.DOCKER_PASSWORD}}
     - name: Clean up unused images
       run: docker image prune -f
     - name: Build extract image
