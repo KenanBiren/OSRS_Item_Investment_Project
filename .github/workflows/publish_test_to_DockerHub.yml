@@ -18,14 +18,14 @@ jobs:
       run:
         docker login -u ${{secrets.DOCKER_USER}} -p ${{secrets.DOCKER_PASSWORD}}
     - name: Build extract image
-      run: docker build --file /build/backend/extract/Dockerfile --tag extract_test
+      run: docker build . --file /build/backend/extract/Dockerfile --tag extract_test
     - name: Push extract image
       run: docker push ${{secrets.DOCKER_USER}}/osrs_item_investment_project
     - name: Build transform image
-      run: docker build --file /build/backend/transform/Dockerfile --tag transform_test
+      run: docker build . --file /build/backend/transform/Dockerfile --tag transform_test
     - name: Push transform image
       run: docker push ${{secrets.DOCKER_USER}}/osrs_item_investment_project
     - name: Build app image
-      run: docker build --file /build/frontend/app/Dockerfile --tag app_test
+      run: docker build . --file /build/frontend/app/Dockerfile --tag app_test
     - name: Push app image
       run: docker push ${{secrets.DOCKER_USER}}/osrs_item_investment_project
