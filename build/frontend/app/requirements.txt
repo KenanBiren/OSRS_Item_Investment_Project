@@ -1,4 +1,3 @@
-tkinter
 pandas
 datetime
 timedelta
