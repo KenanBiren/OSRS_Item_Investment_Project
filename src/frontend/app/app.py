@@ -1,6 +1,6 @@
 import tkinter
 import matplotlib
-matplotlib.use('TKAgg')
+matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 import csv
 import time
