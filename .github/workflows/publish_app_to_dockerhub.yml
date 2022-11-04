@@ -1,0 +1,29 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: docker logout
+      run: docker logout
+    - name: docker login
+      run:
+        docker login -u ${{secrets.DOCKER_USER}} -p ${{secrets.DOCKER_PASSWORD}}
+    - name: Clean up unused images
+      run: docker image prune -f
+    - name: Build extract image
+      run: docker build . --file build/frontend/app/Dockerfile --tag app
+    - name: Tag extract image
+      run: docker tag app ${{secrets.DOCKER_USER}}/osrs_item_investment_project:app
+    - name: Push extract image
+      run: docker push ${{secrets.DOCKER_USER}}/osrs_item_investment_project:app
