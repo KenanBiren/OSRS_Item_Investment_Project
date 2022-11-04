@@ -4,6 +4,8 @@ import datetime
 import timedelta
 import os
 import pandas as pd
+import matplotlib
+matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 from tabulate import tabulate
 
