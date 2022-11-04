@@ -22,7 +22,7 @@ def read_input():
             item_list.append(row[0])
 
                 # prompt input
-    while(False):
+    while(True):
         item = input('What item would you like to search?\n')
         item = item.lower()
         item = item.capitalize()
