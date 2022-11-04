@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use('WebAgg')
+matplotlib.use('MacOSX')
 import matplotlib.pyplot as plt
 import csv
 import time
