@@ -1,4 +1,3 @@
-import tkinter
 import matplotlib
 matplotlib.use('WebAgg')
 import matplotlib.pyplot as plt
