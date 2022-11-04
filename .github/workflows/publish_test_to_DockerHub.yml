@@ -24,5 +24,5 @@ jobs:
     - name: Tag extract image
       run: docker tag extract_test:latest ${{secrets.DOCKER_USER}}/osrs_item_investment_project/extract_test:latest
     - name: Push extract image
-      run: docker push ${{secrets.DOCKER_USER}}/osrs_item_investment_project
+      run: docker push ${{secrets.DOCKER_USER}}/osrs_item_investment_project/extract_test:latest
     
