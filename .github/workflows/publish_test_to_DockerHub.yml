@@ -22,7 +22,9 @@ jobs:
     - name: Clean up unused images
       run: docker image prune -f
     - name: Build extract image
-      run: docker build . --file build/backend/extract/Dockerfile --tag ${{secrets.DOCKER_USER}}/osrs_item_investment_project/extract_test
+      run: docker build . --file build/backend/extract/Dockerfile --tag extract_test
+    - name: Tag extract image
+      run: docker tag extract_test ${{secrets.DOCKER_USER}}/osrs_item_investment_project:extract_test
     - name: Push extract image
-      run: docker push ${{secrets.DOCKER_USER}}/osrs_item_investment_project/extract_test
+      run: docker push ${{secrets.DOCKER_USER}}/osrs_item_investment_project:extract_test
     
