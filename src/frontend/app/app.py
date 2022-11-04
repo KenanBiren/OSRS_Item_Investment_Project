@@ -4,7 +4,8 @@ import datetime
 import timedelta
 import os
 import pandas as pd
-
+import matplotlib.pyplot as plt
+from tabulate import tabulate
 
 
 
@@ -96,15 +97,17 @@ def analysis_data(item_name):
    
     
     yp_list = price_row_df.loc[price_row_df['name'] == item_name].values.tolist()
-    print(yp_list)
     new_yp_list = yp_list[0]
+    new_yp_list.reverse()
     new_yp_list.pop()
-    print(new_yp_list)
+    new_yp_list.reverse()
+   
 
     yv_list = vol_row_df.loc[vol_row_df['name'] == item_name].values.tolist()
-    
     new_yv_list = yv_list[0]
+    new_yv_list.reverse()
     new_yv_list.pop()
+    new_yv_list.reverse()
    
 
     for n in range(len(x_list)):
