@@ -81,7 +81,7 @@ def analysis_data(item_name):
     analysis_df = pd.read_csv('data/analysis_table.csv')
     summary_df = pd.read_csv('data/data_summary.csv')
 
-
+    print(summary_df)
 
     #------------------------------------------------------------
     # print a two-y-axis graph showing price and volume data
@@ -94,12 +94,12 @@ def analysis_data(item_name):
         x_list.append(num)
 
    
-
+    print(yp_list)
     yp_list = price_row_df.loc[price_row_df['name'] == item_name].values.tolist()
     
     new_yp_list = yp_list[0]
     new_yp_list.pop()
-
+    print(new_yp_list)
 
     yv_list = vol_row_df.loc[vol_row_df['name'] == item_name].values.tolist()
     
