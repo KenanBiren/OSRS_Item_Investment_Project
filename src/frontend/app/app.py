@@ -99,16 +99,13 @@ def analysis_data(item_name):
     
     new_yp_list = yp_list[0]
     new_yp_list.pop()
-    new_yp_list = [1544,1543,1552,1561,1560,1571,1580,1593,
-            1597,1587,1597,1602,1601,1605,1600]
 
 
     yv_list = vol_row_df.loc[vol_row_df['name'] == item_name].values.tolist()
     
     new_yv_list = yv_list[0]
     new_yv_list.pop()
-    new_yv_list = [33,34.5,85.5,39.5,28.5,52.6,18,58.5,30.6,
-                85.5,45,22.8,55,34.4,30]
+   
 
     for n in range(len(x_list)):
         data.append([x_list[n], new_yp_list[n], new_yv_list[n]])
