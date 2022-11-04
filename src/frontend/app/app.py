@@ -1,6 +1,6 @@
 import tkinter
 import matplotlib
-matplotlib.use('TkAgg')
+matplotlib.use('WebAgg')
 import matplotlib.pyplot as plt
 import csv
 import time
