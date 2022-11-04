@@ -43,7 +43,7 @@ def read_input():
                     break
 
 
-
+item_name = read_input()
 
 
 def check_files():
@@ -263,7 +263,7 @@ def near_real_data(item):
 
 
 
-item_name = read_input()
+
 check_files()
 analysis_data(item_name)
 near_real_data(item_name)
