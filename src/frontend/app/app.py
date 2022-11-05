@@ -229,7 +229,6 @@ def near_real_data(item):
     options = Options()
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     link = 'https://www.ge-tracker.com/names/rune'
