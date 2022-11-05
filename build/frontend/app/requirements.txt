@@ -4,5 +4,4 @@ timedelta
 matplotlib
 tabulate
 selenium
-webdriver-manager
-chromedriver-autoinstaller
+webdriver_manager
