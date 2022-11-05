@@ -16,7 +16,7 @@ os.system("cd ~/OSRS_Item_Investment_Project/")
 price_df = pd.read_csv('data/14day_price.csv')
 vol_df = pd.read_csv('data/14day_vol.csv')
 
-todays_df = pd.read_csv('code/src/incr_scrape/incr_output.csv')
+todays_df = pd.read_csv('src/incr_scrape/incr_output.csv')
 
 # extract price and volumes from todays data
 price_list = todays_df['price'].tolist()
