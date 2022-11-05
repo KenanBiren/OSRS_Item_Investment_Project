@@ -139,7 +139,8 @@ def analysis_data(item_name):
     ax2.set_ylabel("volume",color="blue",fontsize=14)
     plt.gca().invert_xaxis()
     plt.title(item_name)
-    plt.savefig('foo.png')
+    fig_name = item_name + " Price and Volume.png"
+    plt.savefig(fig_name)
     #plt.show(block=False)
 
 
