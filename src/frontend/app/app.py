@@ -8,15 +8,7 @@ import timedelta
 import os
 import pandas as pd
 from tabulate import tabulate
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import DesiredCapabilities
-from selenium.webdriver.common.proxy import Proxy, ProxyType
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.keys import Keys
-import chromedriver_autoinstaller
+import requests
 
 
 
@@ -217,67 +209,59 @@ def analysis_data(item_name):
 
 
 
-
-
-
-def near_real_data(item):
+def near_real_data(item_name):
+    url = 'https://www.ge-tracker.com/item/'
+    head = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'}
     fields = ['Current Price', 'Current Offer Price', 'Current Sell Price', 'Current Tax',
-                'Buying Quantity (1hr)', 'Selling Quantity (1hr)', 'Buy/Sell Ratio', 'Buy Limit']
-    data = {}
-    data_list = []
-    chromedriver_autoinstaller.install()
-    options = Options()
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
-    driver = webdriver.Chrome(options=chrome_options)
-    link = 'https://www.ge-tracker.com/names/rune'
-    # open up ge-tracker.com to begin search
-    driver.get(link)
-    time.sleep(2)
-    # search item_name
-    text_area = driver.find_element(By.XPATH, '//*[contains(concat( " ", @class, " " ), concat( " ", "form-control", " " ))]')
-    text_area.send_keys(item)
-    text_area.send_keys(Keys.ENTER)
-    time.sleep(2)
-    # click matching result
-    search_results = driver.find_elements(By.CSS_SELECTOR, '.row-item-name')
-    for r in search_results:
-        if r.text == item:
-            link = r.get_attribute('href')
-            time.sleep(2)
-    # extract data
-    driver.get(link)
-    fields = driver.find_elements(By.CSS_SELECTOR, '.has-tooltip')
-    for d in fields:
-        data_list.append(d.text)
-    data_list = list(filter(None, data_list))
+                   'Buying Quantity (1hr)', 'Selling Quantity (1hr)', 'Buy/Sell Ratio', 'Buy Limit']
+    values = {}
+    item_name = item_name.lower()
+    item_name_for_url = item_name.replace(' ', '-')
+    item_name = item_name.capitalize()
+    url = url + item_name_for_url
+    print(url)
+    response = requests.get(url, headers=head)
+    old_lines = response.content.splitlines()
+    new_lines = []
+    ind = 0
+    for i in range(len(old_lines)):
+        new_lines.append(str(old_lines[i]))
+    print(new_lines)
+    for l in range(len(new_lines)):
+        print(new_lines[l])
+        if new_lines[l].__contains__('"name":"%s"' % item_name):
+            ind = l
 
-    try:
-        ratio = driver.find_element(By.CSS_SELECTOR, 'span.text-profit').text
-    except:
-        ratio = driver.find_element(By.CSS_SELECTOR, 'span.text-loss').text
+        # for f in range(len(fields)):
+        #     if new_lines[l].__contains__(fields[f]):
+        #         values[fields[f]] = new_lines[l]
 
+    target = new_lines[ind]
+    start_ind = target.find('"buyingQuantity"')
+    end_ind = target.find('"members"')
+    target = target[start_ind:end_ind]
+    print(target)
+    targets_list = target.split(',')
+    print(targets_list)
+    for t in range(len(targets_list)):
+        targets_list[t] = ''.join(char for char in targets_list[t] if char.isdigit())
+    if len(targets_list[2]) == 3:
+        targets_list[2] = str(int(targets_list[2]) * .01)
+    elif len(targets_list[2]) == 2:
+        targets_list[2] = str(int(targets_list[2]) * .1)
+    values[fields[0]] = targets_list[3]
+    values[fields[1]] = targets_list[5]
+    values[fields[2]] = targets_list[4]
+    values[fields[3]] = targets_list[7]
+    values[fields[4]] = targets_list[0]
+    values[fields[5]] = targets_list[1]
+    values[fields[6]] = targets_list[2]
+    values[fields[7]] = targets_list[12]
 
-    limit = driver.find_element(By.CSS_SELECTOR, 'tr:nth-child(4) td~ td').text
-
-
-    data[fields[0]] = data_list[2]
-    data[fields[1]] = data_list[4]
-    data[fields[2]] = data_list[6]
-    data[fields[3]] = data_list[7]
-    data[fields[4]] = data_list[3]
-    data[fields[5]] = data_list[5]
-    data[fields[6]] = ratio
-    data[fields[7]] = limit
+    print(values)
 
 
 
-    print(data)
-
-
-    driver.close()
 
 
 
