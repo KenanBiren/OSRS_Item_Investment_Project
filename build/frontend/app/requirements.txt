@@ -3,3 +3,5 @@ datetime
 timedelta
 matplotlib
 tabulate
+selenium
+webdriver-manager
