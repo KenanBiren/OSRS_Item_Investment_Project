@@ -139,7 +139,8 @@ def analysis_data(item_name):
     ax2.set_ylabel("volume",color="blue",fontsize=14)
     plt.gca().invert_xaxis()
     plt.title(item_name)
-    plt.show(block=False)
+    plt.savefig('foo.png')
+    #plt.show(block=False)
 
 
 
@@ -201,8 +202,8 @@ def analysis_data(item_name):
     # print all outputs together
     output_df = pd.DataFrame(output_data, columns=['Attribute', 'Has Effect?', 'Effect'])
     print(tabulate(output_df, headers='keys', tablefmt = 'psq1'))
-    plt.show()
-    plt.savefig('graph.png')
+    #plt.show()
+    #plt.savefig('graph.png')
 
 
 
