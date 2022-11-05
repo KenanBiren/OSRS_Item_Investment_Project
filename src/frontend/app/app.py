@@ -16,7 +16,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
-
+import chromedriver_autoinstaller
 
 
 
@@ -225,6 +225,7 @@ def near_real_data(item):
                 'Buying Quantity (1hr)', 'Selling Quantity (1hr)', 'Buy/Sell Ratio', 'Buy Limit']
     data = {}
     data_list = []
+    chromedriver_autoinstaller.install()
     options = Options()
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
@@ -253,7 +254,10 @@ def near_real_data(item):
         data_list.append(d.text)
     data_list = list(filter(None, data_list))
 
-    ratio = driver.find_element(By.CSS_SELECTOR, 'span.text-profit').text
+    try:
+        ratio = driver.find_element(By.CSS_SELECTOR, 'span.text-profit').text
+    except:
+        ratio = driver.find_element(By.CSS_SELECTOR, 'span.text-loss').text
 
 
     limit = driver.find_element(By.CSS_SELECTOR, 'tr:nth-child(4) td~ td').text
