@@ -219,16 +219,13 @@ def near_real_data(item_name):
     item_name_for_url = item_name.replace(' ', '-')
     item_name = item_name.capitalize()
     url = url + item_name_for_url
-    print(url)
     response = requests.get(url, headers=head)
     old_lines = response.content.splitlines()
     new_lines = []
     ind = 0
     for i in range(len(old_lines)):
         new_lines.append(str(old_lines[i]))
-    print(new_lines)
     for l in range(len(new_lines)):
-        print(new_lines[l])
         if new_lines[l].__contains__('"name":"%s"' % item_name):
             ind = l
 
@@ -240,9 +237,7 @@ def near_real_data(item_name):
     start_ind = target.find('"buyingQuantity"')
     end_ind = target.find('"members"')
     target = target[start_ind:end_ind]
-    print(target)
     targets_list = target.split(',')
-    print(targets_list)
     for t in range(len(targets_list)):
         targets_list[t] = ''.join(char for char in targets_list[t] if char.isdigit())
     if len(targets_list[2]) == 3:
