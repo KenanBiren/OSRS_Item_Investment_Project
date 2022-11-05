@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use("TkAgg")
+matplotlib.use("AGG")
 import matplotlib.pyplot as plt
 import csv
 import time
