@@ -5,3 +5,4 @@ matplotlib
 tabulate
 selenium
 webdriver_manager
+chromedriver_autoinstaller
