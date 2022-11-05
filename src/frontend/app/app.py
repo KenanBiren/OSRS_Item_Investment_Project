@@ -202,6 +202,7 @@ def analysis_data(item_name):
     output_df = pd.DataFrame(output_data, columns=['Attribute', 'Has Effect?', 'Effect'])
     print(tabulate(output_df, headers='keys', tablefmt = 'psq1'))
     plt.show()
+    plt.savefig('graph.png')
 
 
 
