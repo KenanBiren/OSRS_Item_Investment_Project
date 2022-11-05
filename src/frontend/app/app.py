@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use("agg")
+matplotlib.use("MacOSX")
 import matplotlib.pyplot as plt
 import csv
 import time
