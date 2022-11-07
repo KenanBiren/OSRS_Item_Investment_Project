@@ -34,7 +34,7 @@ Project will automatically stay up-to-date with my version releases.
 #### 1. Create your own Docker Hub repository
 #### 2. Create your own Github project repository as a copy of this one
 #### 3. Edit Github workflows to send Docker images to your Docker Hub
-My Docker Hub repository for this project is named "kenanbiren/osrs_item_investment_project". I suggest you name yours "*YOUR NAME*/osrs_item_investment_project", so you can easily find and replace my Docker Hub url with your own in each workflow file and in Docker commands (if you are usinf Airflow don't forget to edit the Docker commands in your DAG)
+My Docker Hub repository for this project is named "kenanbiren/osrs_item_investment_project". I suggest you name yours "*YOUR NAME*/osrs_item_investment_project", so you can easily find and replace my Docker Hub url with your own in each workflow file and in Docker commands (if you are using Airflow don't forget to edit the Docker commands in your DAG)
 
 Now when you push code to the "test" branch on your Github, your "test" Docker images will be automatically sent to your Docker Hub via Github workflow actions.
 You can then run the "test" Docker images in a test environment to verify functionality and make more changes before pushing the code to the production environment ("main" branch in Github).
