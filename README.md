@@ -162,12 +162,11 @@ User is prompted to search for an item. If no item matches, the user given a lis
 
 Pandas library is used to multiply item name's analysis table data with today's data summary, giving a prediction for how much it will go up in price within the next day. A table is printed explaining some of the logic behind the calculation. A graph is created comparing that item's price and volume data for the past two weeks.
 
-
 | Attribute  | Has Effect? | Effect
 | ------------- | ------------- | ------------- |
-| two_day_run_p  | Yes  | 0.00432 |
-| three_day_run_p  | Yes  | 0.01030 |
-| five_day_run_p  | Yes  | 0.02335 |
+| two_day_run_p  | Yes  | 0.00453 |
+| three_day_run_p  | Yes  | 0.0195 |
+| five_day_run_p  | Yes  | 0.00105 |
 | seven_day_run_p  | No  | 0 |
 | two_day_run_v  | No  | 0 |
 | three_day_run_v  | No  | 0 |
@@ -181,7 +180,7 @@ Pandas library is used to multiply item name's analysis table data with today's 
 | three_day_avg_v  | Yes  | -0.00011 |
 | seven_day_avg_v  | Yes  | 0.00069 |
 | fourteen_day_avg_v  | Yes  | 0.00057 |
-| Total |  | 3.781% |
+| Total |  | 2.492% |
 
 <img width="638" alt="price_volume_graph" src="https://user-images.githubusercontent.com/116853630/198848946-8671cc9a-c59a-4a06-914d-1e3a10bb4b7f.png">
 
