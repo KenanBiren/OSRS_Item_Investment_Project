@@ -2,6 +2,8 @@
 
 ## Run this project via command line 
 Start with a local or virtual machine with Docker installed.
+
+Note: I run the frontend on an Apple M1 chip, so I used "--platform=amd/64" in my frontend Dockerfile and Docker commands to negate complications between Docker and the M1 chip. You will probably want to leave out this line of code.
 #### 1. Make a directory titled "OSRS_Item_Investment_Project" and navigate to it, or copy this repo and navigate to the project folder
 #### 2. Delete previous Docker images and containers (highly recommended, not needed first time)
 
