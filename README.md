@@ -135,7 +135,7 @@ Data Summary:
 
 |date|two_day_run_p|three_day_run_p|five_day_run_p|seven_day_run_p|two_day_run_v|three_day_run_v|five_day_run_v|seven_day_run_v|one_day_avg_p|three_day_avg_p|seven_day_avg_p|fourteen_day_avg_p|one_day_avg_v|three_day_avg_v|seven_day_avg_v|fourteen_day_avg_v|
 |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
-|2022/10/23|0.00453|0.00195|0.00105|0.00037|-0.00091|-2e-05|0.0|0.0|0.00198|0.00198|0.00093|0.00154|-0.00116|0.00011|0.00069|-0.00057|
+|2022/10/22|0.00453|0.00195|0.00105|0.00037|-0.00091|-2e-05|0.0|0.0|0.00198|0.00198|0.00093|0.00154|-0.00116|0.00011|0.00069|-0.00057|
 
 
 
