@@ -4,11 +4,11 @@ import datetime
 import timedelta
 import os
 
-## This script takes a full 14-day scrape output from Scrapy and converts it
+## This script takes a full 14-day scrape output from scrapy and converts it
 ## to separate 14-day price and volume tables indexed by correct dates
 
 price_data = {}
-vol_data = {}
+vol_data = {}   # read scrapy output
 with open('full_output.csv', mode='r') as f:
     header = next(f)
     
@@ -38,7 +38,7 @@ with open('full_output.csv', mode='r') as f:
 current_date = datetime.date.today()
 
 # replace chronological, variable-named columns with chronological dates
-# create 14day_price.csv and 14day_vol.csv
+# save to separate 14day_price.csv and 14day_vol.csv files
 header = ['name']
 for d in range(15):
     header.append((current_date - datetime.timedelta(days=d)).strftime('%Y/%m/%d'))

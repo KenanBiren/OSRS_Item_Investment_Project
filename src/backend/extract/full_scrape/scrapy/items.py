@@ -1,7 +1,7 @@
 import scrapy
 
 # these are the indexes for data scraped by the full (14-day) spider
-# these indexes are converted to dates by pre_analysis
+# these indexes are converted to dates by post_scrape.py
 class FullScrapeItem(scrapy.Item):
     name = scrapy.Field()
     p_0 = scrapy.Field()

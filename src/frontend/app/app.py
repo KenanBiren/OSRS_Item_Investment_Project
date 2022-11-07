@@ -11,7 +11,8 @@ from tabulate import tabulate
 import requests
 
 
-
+# prompt user for an item name. If no name matches, give some suggestions
+# of items they might have meant to search for
 def read_input():
     item_list = []
     print(os.getcwd())
@@ -36,10 +37,10 @@ def read_input():
         else:                       # invalid input -> suggestion
             print('Invalid input, please try again. Did you mean:')
             item_split = item.split()
-            longest_word = max(item_split, key=len)
-            for i in range(len(item_list)):
-                if longest_word in item_list[i]:
-                    print(item_list[i])
+            longest_word = max(item_split, key=len)     # check for item names
+            for i in range(len(item_list)):             # containing longest
+                if longest_word in item_list[i]:        # word of user's invalid    
+                    print(item_list[i])                 # input
                     t = t + 1
                 if t == 5:
                     break
@@ -47,26 +48,27 @@ def read_input():
 
 item_name = read_input()
 
-
+        # check if local data folder has been updated with today's data
 def check_files():
     current_date = datetime.date.today()
     cd_str = current_date.strftime('%Y/%m/%d')
-    yest_date = current_date - datetime.timedelta(days=2)
+    yest_date = current_date - datetime.timedelta(days=1)
     yest_str = yest_date.strftime('%Y/%m/%d')
-    tom_date = current_date + datetime.timedelta(days=2)
-    tom_str = tom_date.strftime('%Y/%m/%d')
 
     
 
     filePath = "data/"
     last_updated = os.path.getmtime(filePath)
-    # convert seconds since epoch to readable timestamp
+            # convert seconds since epoch to readable timestamp
     last_updated_str = time.strftime('%Y/%m/%d', time.localtime(last_updated))
    
 
-
+            # warn user if data has not been updated recently
     if last_updated_str != cd_str:
-        print("Today's daily investment analysis has not yet been updated. Using yesterday's.\n")
+        if last_updated_str == yest_str:
+            print("Today's daily investment analysis has not yet been updated. Using yesterday's.\n")
+        else:
+            print("Daily investment analysis has not been updated. Using old data.\n")
 
 
 
@@ -77,7 +79,7 @@ def check_files():
 
 def analysis_data(item_name):
     working_df = {}
-
+            # read data folder files into dataframes
     price_df = pd.read_csv('data/14day_price.csv')
     vol_df = pd.read_csv('data/14day_vol.csv')
     analysis_df = pd.read_csv('data/analysis_table.csv')
@@ -86,9 +88,10 @@ def analysis_data(item_name):
     print(summary_df)
 
     #------------------------------------------------------------
-    # print a two-y-axis graph showing price and volume data
+            # print a two-y-axis graph showing price and volume data
     data = []
     x_list = []
+            # get two-weeks' price and volume data as lists
     price_row_df = price_df.loc[price_df['name'] == item_name]
     vol_row_df = vol_df.loc[vol_df['name'] == item_name]
 
@@ -96,14 +99,14 @@ def analysis_data(item_name):
         x_list.append(num)
 
    
-    
+            # get rid of item name in price list
     yp_list = price_row_df.loc[price_row_df['name'] == item_name].values.tolist()
     new_yp_list = yp_list[0]
     new_yp_list.reverse()
     new_yp_list.pop()
     new_yp_list.reverse()
    
-
+            # get rid of item name in volume list
     yv_list = vol_row_df.loc[vol_row_df['name'] == item_name].values.tolist()
     new_yv_list = yv_list[0]
     new_yv_list.reverse()
@@ -137,7 +140,7 @@ def analysis_data(item_name):
     ax2.plot(graph_df.days_ago, graph_df["volume"],color="blue",marker="o")
     ax2.set_ylabel("volume",color="blue",fontsize=14)
     plt.gca().invert_xaxis()
-    plt.title(item_name)
+    plt.title(item_name)        # set filename of figure that will be created
     fig_name = item_name + " Price and Volume.png"
     plt.savefig(fig_name)
     #plt.show(block=False)
@@ -151,13 +154,13 @@ def analysis_data(item_name):
     # find analysis data on item_name
     analysis = analysis_df.loc[analysis_df['name'] == item_name].values.tolist()
 
-    # extract analysis data on item_name as list
+    # extract analysis data on item_name as list (delete item name from list)
     analysis_data = analysis[0]
     analysis_data.reverse()
     analysis_data.pop()
     analysis_data.reverse()
 
-    # extract today's summary data as a list
+    # extract today's summary data as a list (delete date value from list)
     summary = summary_df[:].values.tolist()
     summary_data = summary[0]
     summary_data.reverse()
@@ -199,7 +202,7 @@ def analysis_data(item_name):
 
 
 
-    # print all outputs together
+        # print all outputs together
     output_df = pd.DataFrame(output_data, columns=['Attribute', 'Has Effect?', 'Effect'])
     print(tabulate(output_df, headers='keys', tablefmt = 'psq1'))
     #plt.show()
@@ -208,42 +211,50 @@ def analysis_data(item_name):
 
 
 
-
+    # scrape ge-tracker.com for up-to-date data on item name searched by user
 def near_real_data(item_name):
     url = 'https://www.ge-tracker.com/item/'
     head = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'}
     fields = ['Current Price', 'Current Offer Price', 'Current Sell Price', 'Current Tax',
                    'Buying Quantity (1hr)', 'Selling Quantity (1hr)', 'Buy/Sell Ratio', 'Buy Limit']
     values = {}
+
+        # build url to scrape from item name
     item_name = item_name.lower()
     item_name_for_url = item_name.replace(' ', '-')
     item_name = item_name.capitalize()
     url = url + item_name_for_url
+
+        # go to url
     response = requests.get(url, headers=head)
     old_lines = response.content.splitlines()
     new_lines = []
-    ind = 0
+    ind = 0             # split html lines into list of strings
     for i in range(len(old_lines)):
         new_lines.append(str(old_lines[i]))
-    for l in range(len(new_lines)):
+    for l in range(len(new_lines)):         # search list of lines line containing item data
         if new_lines[l].__contains__('"name":"%s"' % item_name):
             ind = l
 
-        # for f in range(len(fields)):
-        #     if new_lines[l].__contains__(fields[f]):
-        #         values[fields[f]] = new_lines[l]
-
+       
+            # target line containing item data
     target = new_lines[ind]
-    start_ind = target.find('"buyingQuantity"')
-    end_ind = target.find('"members"')
+    start_ind = target.find('"buyingQuantity"')     # trim unnecessary start/end
+    end_ind = target.find('"members"')              # of the line
     target = target[start_ind:end_ind]
     targets_list = target.split(',')
     for t in range(len(targets_list)):
         targets_list[t] = ''.join(char for char in targets_list[t] if char.isdigit())
+
+            # correct the decimal place because "Buy Ratio" sometimes
+            # has two or three digits
     if len(targets_list[2]) == 3:
         targets_list[2] = str(int(targets_list[2]) * .01)
     elif len(targets_list[2]) == 2:
         targets_list[2] = str(int(targets_list[2]) * .1)
+
+
+            # put scraped data values in "values" dictionary
     values[fields[0]] = targets_list[3]
     values[fields[1]] = targets_list[5]
     values[fields[2]] = targets_list[4]
@@ -254,12 +265,6 @@ def near_real_data(item_name):
     values[fields[7]] = targets_list[12]
 
     print(values)
-
-
-
-
-
-
 
 
 

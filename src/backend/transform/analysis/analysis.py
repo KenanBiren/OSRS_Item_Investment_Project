@@ -2,11 +2,16 @@ import pandas as pd
 import datetime
 import timedelta
 import csv
+import os
+
+
+# this script uses today's 14day_price.csv and 14day_vol.csv to create today's
+# analysis_table.csv and data_summary.csv
 
 
 
-
-# calculate data for run attributes
+# calculate if item has increased in (price, volume) for the past (2, 3, 5, 7)
+# days consecutively
 def get_run_data(price_list, vol_list):
     two_day_run_p = 0
     three_day_run_p = 0
@@ -74,13 +79,17 @@ def get_run_data(price_list, vol_list):
             two_day_run_v, three_day_run_v, five_day_run_v, seven_day_run_v]
 
 
-# calculate data for avg attributes
+# calculate percent change in an item's daily average (price, volume) from 
+# (1, 3, 7, 14) days ago
 def get_avg_data(price_list, vol_list):
+    # PRICE
+
     one_day_avg_p = (price_list[0] - price_list[1]) / (price_list[1])
     three_day_avg_p = (price_list[0] - price_list[3]) / (price_list[3])
     seven_day_avg_p = (price_list[0] - price_list[7]) / (price_list[7])
     fourteen_day_avg_p = (price_list[0] - price_list[14]) / (price_list[14])
 
+    # VOLUME
     one_day_avg_v = (vol_list[0] - vol_list[1]) / (vol_list[1] + 1)
     three_day_avg_v = (vol_list[0] - vol_list[3]) / (vol_list[3] + 1)
     seven_day_avg_v = (vol_list[0] - vol_list[7]) / (vol_list[7] + 1)
@@ -95,32 +104,16 @@ def get_avg_data(price_list, vol_list):
 
 
 
-# code to run
-working_df = {}
 
+
+
+# convert 14day csvs to pandas dataframes
 price_df = pd.read_csv('data/14day_price.csv')
 vol_df = pd.read_csv('data/14day_vol.csv')
 
 
 
-current_date = datetime.date.today()
-# list of column names of scrapy_output.csv so the dataframe columns can be renamed
-old_head = ['name']
-new_head = ['name', '_0', '_1', '_2', '_3', '_4', '_5', '_6', '_7',
-            '_8', '_9', '_10', '_11', '_12', '_13', '_14',]
-for d in range(15):
-    old_head.append((current_date - datetime.timedelta(days=d)).strftime('%Y/%m/%d'))
-print(old_head)
-
-# rename columns
-for i in range(1,16):
-    oh = old_head[i]
-    nph = 'p' + new_head[i]
-    nvh = 'v' + new_head[i]
-    price_df.rename(columns={oh: nph}, inplace=True)
-    vol_df.rename(columns={oh: nvh}, inplace=True)
-
-# overwrite analysis_table.csv with column names, no data
+# overwrite analysis_table.csv with header row (column names)
 analysis_header = ['name', 'two_day_run_p', 'three_day_run_p', 'five_day_run_p',
                    'seven_day_run_p', 'two_day_run_v', 'three_day_run_v',
                    'five_day_run_v', 'seven_day_run_v', 'one_day_avg_p',
@@ -132,7 +125,7 @@ with open('data/analysis_table.csv', mode='w') as f:
     writer.writerow(analysis_header)
     f.close()
 
-# combine name, run data, and avg data
+# combine each item's name, run data, and avg data into a row
 for n in range(len(price_df.index)):
     name = price_df.loc[n, price_df.columns == 'name']
     namelist = name.tolist()
@@ -143,7 +136,7 @@ for n in range(len(price_df.index)):
     run_data = get_run_data(price_list, vol_list)
     avg_data = get_avg_data(price_list, vol_list)
 
-    # add name, run data, and avg data to analysis_table.csv
+    # add row of data produced above to analysis_table.csv
     row = namelist + run_data + avg_data
     with open('data/analysis_table.csv', mode='a') as f:
         writer = csv.writer(f)
@@ -152,7 +145,7 @@ for n in range(len(price_df.index)):
 
 
 
-#-----------------------data summary below
+#-----------------------create data summary
 
 
 fields = ['two_day_run_p', 'three_day_run_p', 'five_day_run_p',
@@ -164,10 +157,6 @@ current_date = datetime.date.today().strftime('%Y/%m/%d')
 data.append(current_date)
 
 df = pd.read_csv('data/analysis_table.csv')
-
-
-
-
 result_list = df['one_day_avg_p']
 
 for n in range(len(fields)):
@@ -180,9 +169,9 @@ for n in range(len(fields)):
 
 with open('data/data_summary.csv', mode='w') as f:
     writer = csv.writer(f)
-
     writer.writerow(['date'] + fields)
     writer.writerow((data))
 
-
-
+# once analysis is done, run script to test analysis output
+os.system('python3 src/backend/transform/analysis/analysis_test.py')
+           

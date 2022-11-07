@@ -6,11 +6,6 @@ from scrapy import Request
 
 
 
-
-
-
-
-
 class FullScrapeSpider(scrapy.Spider):
     name = 'full_scrape'
     def start_requests(self):

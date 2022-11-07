@@ -1,7 +1,13 @@
 import csv
 import os
 
-trigger = ''
+# run pre_scrape script to choose the correct scrape mode (full or incr) and 
+# verify existence of required files if incremental scrape is chosen
+os.system('python3 src/backend/extract/set_scrape_type.py')
+
+
+
+trigger = '' # read scrape mode
 with open("data/full_or_incr.csv", 'r') as f:
     reader = csv.reader(f)
     for row in reader:
@@ -9,23 +15,26 @@ with open("data/full_or_incr.csv", 'r') as f:
             trigger = 'full'
         elif: row[1] = 'incr':
             trigger = 'incr'
-        #     ......error
     f.close()
 
-if trigger == 'full':            
-    os.system('cd src/extract/full_scrape/')
+if trigger == 'full':    # trigger full scrape and corresponding post_scrape.py        
+    os.system('python3 src/backend/extract/trigger_scrape.py')
+    os.system('cd src/backend/extract/full_scrape/')
     os.system("scrapy crawl full_scrape -o full_output.csv")
-    # add unit test here
     os.system("python3 post_scrape.py")
-    # add unit test here
-else:
-    os.system('cd src/extract/incr_scrape/')
+    os.system("python3 full_scrape_test.py")
+    
+elif trigger == 'incr':  # trigger full scrape and corresponding post_scrape.py
+    os.system('python3 src/backend/extract/trigger_scrape.py')
+    os.system('cd src/backend/extract/incr_scrape/')
     os.system("scrapy crawl incr_scrape -o incr_output.csv")
-    # add unit test here
     os.system("python3 post_scrape.py")
-    # add unit test here
+    
 
+        # trigger post_scrape verification test
+os.system("cd ~/OSRS_Item_Investment_Project/;python3 src/backend/extract/post_scrape_test.py")
 
+        # set next scrape mode as incremental
 with open("data/full_or_incr.csv", 'w') as f:
     writer = csv.writer
     writer.writerow(["full (full) or incremental (incr)", "incr"])
