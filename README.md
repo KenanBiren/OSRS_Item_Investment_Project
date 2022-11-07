@@ -7,10 +7,11 @@ Providing investors with item-by-item investment analysis for Runescape items.
 1. Introduction
 2. Purpose and Summary
 3. Architecture Diagram
-4. Sources of Data
-5. Backend Component (Daily ETL)
-6. Frontend Component (App)
-7. Completed and Future Improvements
+4. Deployment Diagram
+5. Sources of Data
+6. Backend Component (Daily ETL)
+7. Frontend Component (App)
+8. Completed and Future Improvements
 
 
 
@@ -28,9 +29,9 @@ How do they choose which items to invest in?
 
 ## Purpose and Summary
 
-The purpose of this project is to help an investor decide if a specific item is a good investment or not. Investment prediction is one of the most complex topics out there, so investors need as much information as possible to make decisions. This project aims to be a multifaceted investment analysis tool that gives investment analysis on an item-by-item basis. It does so by applying that specific item's data to a daily running investment analysis, and serving the results alongside the most current data (I'm calling it near-real-time data, taken from ge-tracker.com).
+The purpose of this project is to help an investor decide if a specific item is a good investment or not. This project aims to be a multifaceted investment analysis tool that gives investment analysis on an item-by-item basis. It does so by applying that specific item's data to a daily running investment analysis, and serving the prediction results alongside the most up-to-date data for that item.
 
-The purpose of all this is to provide a picture that takes into account the item's historical data on the week, day, and minute-by-minute level. These are the steps that this project takes.
+The purpose of this is to provide a picture that takes into account the item's historical data on the week, day, and minute-by-minute level. Below are the steps that this project takes.
 
 1. Two weeks' worth of price and volume data is scraped daily with Scrapy. Pandas is used to analyze 16 attributes for each item.
 ``` 
@@ -41,7 +42,7 @@ How much the item has changed in (price, volume)
 ```
 
 2. A data summary is created by aggregating the results of data analysis.
-3. Airflow sends the data to the "App Server" that the user interacts with.
+3. Airflow sends the data to the App Server that the user interacts with.
 4. When a user searches for an item, the today's data summary is applied to that item's attributes to predict how much it will change in price over the next day.
 5. Item is searched and data is extracted from ge-tracker.com to provide user with the most up-to-date information on that item.
 6. A graph of price and volume over the past two weeks is presented. Price and volume are plotted on the same graph to show possible interactions.
@@ -54,29 +55,30 @@ Example outputs are [shown below](https://github.com/KenanBiren/OSRS_Item_Invest
 <img width="700" alt="Screen Shot 2022-11-06 at 10 05 40 PM" src="https://user-images.githubusercontent.com/116853630/200237471-012691ed-5d99-453a-b551-9af21dc6e4da.png">
 
 
+## Deployment Diagram
+
+
+<img width="700" alt="Screen Shot 2022-11-06 at 10 09 30 PM" src="https://user-images.githubusercontent.com/116853630/200394038-4bb37d28-cb3c-4227-a589-6ddcfd7396da.png">
 
 
 
 ## Sources of Data
-There are many sources that give data on items that OSRS investors might want. Here are the sources of data used in this project (showing example item Abyssal Whip).
+There are many sources that give data on items that OSRS investors might want. Here are the sources of data used in this project (showing example item Abyssal whip).
 
 
-Official Old School Runescape Website:
-https://secure.runescape.com/m=itemdb_oldschool/Abyssal+whip/viewitem?obj=4151
+[Official Old School Runescape Website](https://secure.runescape.com/m=itemdb_oldschool/Abyssal+whip/viewitem?obj=4151)
 
 This website shows the daily average price and volume per item. This source gives daily average data for each item, unlike the next two sources which give near-real-time data. Therefore this website is used as the data source for the daily-running investment analysis.
 
 
-Old School Wiki Database:
-https://prices.runescape.wiki/osrs/item/4151
+[Old School Wiki Database](https://prices.runescape.wiki/osrs/item/4151)
 
 This site shows up-to-date price/volume data and a few other basic fields like "Buy Limit". This site is a fast API that is a great source to get a master list of all items in the game, with the ability to use the API to pre-filter based on specific values (this may be utiilized in the future).
 
 
-ge-tracker.com:
-https://www.ge-tracker.com/item/abyssal-whip
+[ge-tracker.com](https://www.ge-tracker.com/item/abyssal-whip)
 
-This site shows near-real time data. This site is similar to the Wiki API, but is used because it includes other data fields such as "Buying Quantity (1 hour)" and "Selling Quantity (1 hour)" which could be very useful information for users.
+This site shows near-real time data. This site is similar to the Wiki API, but is used because it includes other data fields such as "Buying Quantity (1 hour)" and "Selling Quantity (1 hour)" which could be very useful information for investors.
 
 
 ## Backend Component (Daily ETL)
@@ -88,7 +90,7 @@ This site shows near-real time data. This site is similar to the Wiki API, but i
 #### Mention: The backend of this project is based off of my [previous ELT pipeline](https://github.com/Kenan-Biren/OSRS_Investment_Project)
 
 
-A major goal of that project was to develop more experience with using cloud technologies (AWS) in a data pipeline. Upon finishing that project, I wanted to implement a CI/CD workflow specifically with Github and Docker, but I didn't really know what improvements I wanted to implement.
+A major goal of that project was to develop more experience with using cloud technologies (AWS) in a data pipeline. Upon finishing that project, I wanted to implement a CI/CD workflow Github and Docker, but I didn't really know what improvements I wanted to implement.
 After some thought I realized that I could make this a lot more interesting by providing users an item-by-item analysis instead of a general daily recommendations list. Having a more defined focus for the end product has allowed me to easily think ahead to what features users might want, and decide how to restructure the project to leverage the use of Github and Docker in a CI/CD workflow.
 
 
@@ -96,14 +98,13 @@ After some thought I realized that I could make this a lot more interesting by p
 
 ### Extract: Daily Scrape
 
-This project uses the Scrapy framework to extract data from web sources. There are two spiders, one scrapes one days' worth of data and the other scrapes two weeks' worth of data. The two week spider is for when new items are added to the game and for the very first scrape. A pre-analysis script goes along with each spider, which takes the spider output and formats to 14day_price.csv and 14day_vol.csv to prepare for analysis.
-14day_price.csv and 14day_vol.csv contain the past 14 days of price and volume data for all items, indexed by correct dates.
+This project uses the Scrapy framework to extract data from web sources. There are two spiders, one scrapes one day's worth of data and the other scrapes two weeks' worth of data. The two week spider is for when new items are added to the game and for the very first scrape. A post-scrape script goes along with each spider, which takes the spider output and formats them into 14day_price.csv and 14day_vol.csv to prepare for analysis. 14day_price.csv and 14day_vol.csv contain the past 14 days of price and volume data for all items, indexed by correct dates.
 
 
 
 ### Transform: Daily Analysis
 
-The daily analysis takes the past 14 days of raw price and volume data for each item and calculates attributes.
+The daily analysis takes the past 14 days of raw price and volume data and calculates attributes for each item.
 
 
 Calculated Attributes:
@@ -127,7 +128,7 @@ Calculated Attributes:
     fourteen_day_avg_v = ...
 
 
-The average effect of each attribute on price change is calculated by averaging recent price change (same as one_day_avg_p) across all items where that factor applies. This produces a data_summary file which lists each attribute, and how much % change it is expected to make in items that have that attribute. For example, if the average price change for all items with two_day_run_p=1 (True) is 2%, a specific item that has two_day_run_p=1 will be assumed to increase 2% in the next day.
+The average effect of each attribute on price change is calculated by averaging recent price change (same as one_day_avg_p) across all items where that factor applies. This produces a data summary which lists each attribute, and how much % change it is expected to make in items that have that attribute. For example, if the average price change for all items with two_day_run_p=1 (True) is 2%, a specific item that has two_day_run_p=1 will be assumed to increase 2% in the next day.
 
 Data Summary:
 
@@ -142,8 +143,7 @@ Later when a user searches for an item, that item's attribute data is multiplied
 
 
 ### Load: Upload to App Server
-
-The Airflow DAG that previously triggered the daily scrape and analysis now triggers file transfer to the App Server via the [SFTPOperator](https://airflow.apache.org/docs/apache-airflow-providers-sftp/stable/_api/airflow/providers/sftp/operators/sftp/index.html)
+Airflow transfers today's investment analysis to the App Server via the [SFTPOperator](https://airflow.apache.org/docs/apache-airflow-providers-sftp/stable/_api/airflow/providers/sftp/operators/sftp/index.html)
 
 
 
