@@ -6,10 +6,12 @@ Providing investors with item-by-item investment analysis for Runescape items.
 # Table Of Contents:
 1. Introduction
 2. Purpose
-3. Sources of Data
-4. Backend Components
-5. Frontend Components and Outputs
-6. Future Changes
+3. Demonstration
+4. Sources of Data
+5. Backend Component (Daily ETL)
+6. Frontend Component (App)
+7. Scheduling and CI/CD Workflow
+8. Completed and Future Improvements
 
 
 
@@ -19,20 +21,32 @@ Providing investors with item-by-item investment analysis for Runescape items.
 
 Old School Runescape (OSRS) is an online game released in February 2013 as a reboot of the 2007 version of Runescape. Millions of people play the game, as it offers a wide variety of activities like going on quests, fighting monsters and other players, and leveling up your character's skills. OSRS players can trade each other items for gold coins, and the game has an automated trading system so players can buy or sell items without having to schedule a time to meet and trade.
 
-The automated trading system is called the Grand Exchange. One player puts their item into the system, one player their coins, and it conducts the trade. Because almost all trades happen on the Grand Exchange, players often in try to observe trends in price, and invest in items that will go up. Some players make millions of coins each day by choosing the correct items. One might ask, how do they make their decision? 
+The automated trading system is called the Grand Exchange. One player puts their item into the system, one player their coins, and it conducts the trade. Because almost all trades happen on the Grand Exchange, players often in try to observe trends in price, and invest in items that will go up. Some players make millions of coins each day by choosing the correct items. 
+
+How do they choose which items to invest in?
 
 
 
 ## Purpose:
 
-The purpose of this project is to help an investor decide if a specific item is a good investment or not. Investment prediction is one of the most complex topics out there, so investors need as much information as possible to make decisions. This project aims to be a useful tool for investors when deciding whether or not to invest in a specific item.
-What this project is:
-1. In the background: Data is scraped daily and analysis is performed on two weeks' worth of price and volume trading data from every item.
-2. When a user searches for an item, the results of this daily analysis are applied to that item to predict how much it will change in price in the next day.
-3. Item name is searched and data is extracted from ge-tracker.com to provide user with the most up-to-date information on that item.
-4. A graph of price and volume over the past two weeks is presented. Price and volume are plotted on the same graph with different y-axes so that there interaction between the two can be viewed, as oftentimes an item's price and volume average for the day are magnitudes apart.
+The purpose of this project is to help an investor decide if a specific item is a good investment or not. Investment prediction is one of the most complex topics out there, so investors need as much information as possible to make decisions. This project aims to be a multifaceted investment analysis tool that gives investment analysis on an item-by-item basis. It does so by applying that specific item's data to a daily running investment analysis, and serving the results alongside the most current data (I'm calling it near-real-time data, taken from ge-tracker.com).
 
-This project uses Python - Scrapy and Pandas - in the backend to scrape web data and analyze it. Analyzed data is sent to an S3 bucket, where it can be accessed by the frontend scripts. A file name status_file.csv is used to prevent concurrent upload and download request to S3, and also holds some useful fields that can be used in verification tests.
+The purpose of all this is to provide a picture that takes into account the item's historical data on the week, day, and minute-by-minute level. These are the general steps that are taken to accomplish this.
+
+1. Two weeks' worth of price and volume data is scraped daily with Scrapy and Pandas is used to calculate 16 data points for each item.
+``` 
+If the item has changed in (price, volume)
+    consecutively in the past (2, 3, 5, 7) days
+How much the item has changed in (price, volume)
+    compared to (1, 3, 7, 14) days ago
+```
+
+3. The daily analysis is automatically sent to the "App Server" that the user interacts with.
+4. When a user searches for an item, the results of this daily analysis are applied to that item to predict how much it will change in price in the next day.
+5. Item name is searched and data is extracted from ge-tracker.com to provide user with the most up-to-date information on that item.
+6. A graph of price and volume over the past two weeks is presented. Price and volume are plotted on the same graph to show possible trends in interactions.
+
+This project uses Python (Scrapy and Pandas) on an EC2 instance to scrape web data and analyze it. Analyzed data is sent to an S3 bucket, where it can be accessed by the frontend scripts. A file name status_file.csv is used to prevent concurrent upload and download request to S3, and also holds some useful fields that can be used in verification tests.
 
 
 
@@ -45,35 +59,35 @@ There are many sources that give data on items that OSRS investors might want. H
 Official Old School Runescape Website:
 https://secure.runescape.com/m=itemdb_oldschool/Abyssal+whip/viewitem?obj=4151
 
-This website shows the daily average price and volume per item. The daily average data from this site is what is best to use for daily investment analysis. We wouldn't want to extract near-real time data from either of the sources below and pretend as if it represents the average price that day.
+This website shows the daily average price and volume per item. This source gives daily average data for each item, unlike the next two sources which give near-real-time data. Therefore this website is used as the data source for the daily-running investment analysis.
 
 
 Old School Wiki Database:
 https://prices.runescape.wiki/osrs/item/4151
 
-This site shows up-to-date price/volume data and a few other basic fields like "Buy Limit". This site is a fast API that is a great source to get a list of all items in the game, with the ability to use the API to pre-filter based on specific values (this may be utiilized in the future).
+This site shows up-to-date price/volume data and a few other basic fields like "Buy Limit". This site is a fast API that is a great source to get a master list of all items in the game, with the ability to use the API to pre-filter based on specific values (this may be utiilized in the future).
 
 
 ge-tracker.com:
 https://www.ge-tracker.com/item/abyssal-whip
 
-This site shows near-real time data. This site is used because it includes unique fields like "Buying Quantity (1 hour)" and "Selling Quantity (1 hour)" which could be very useful for investors.
+This site shows near-real time data. This site is similar to the Wiki API, but is used because it includes other data fields such as "Buying Quantity (1 hour)" and "Selling Quantity (1 hour)" which could be very useful information for users.
 
 
-
+## Backend Component (Daily ETL):
+    Daily Scrape
+    Daily Analysis
+    Processing
 
 
 #### Mention: The backend of this project is based off of my [previous ELT pipeline](https://github.com/Kenan-Biren/OSRS_Investment_Project)
 
 
-I made this into an entirely new project because I am not utilizing AWS Redshift any more. This game has 3841 items, so the data analysis can be handled fine with Pandas. This is better because I plan to incorporate factorial analysis in the future to replace data calculated directly from sums and averages of raw data. This should increase the accuracy of the analysis, and having all components as python scripts will make Dockerizing them much faster to do. 
+A major goal of that project was to develop more experience with using cloud technologies (AWS) in a data pipeline. Upon finishing that project, I wanted to implement a CI/CD workflow specifically with Github and Docker, but I didn't really know what improvements I wanted to implement.
+After some thought I realized that I could make this a lot more interesting by providing users an item-by-item analysis instead of a general daily recommendations list. Having a more defined focus for the end product has allowed me to easily think ahead to what features users might want, and decide how to restructure the project to leverage the use of Github and Docker in a CI/CD workflow.
 
 
 
-## Backend Components:
-    Daily Scrape
-    Daily Analysis
-    Processing
 
 ### Daily Scrape:
 
@@ -125,7 +139,7 @@ To finish everything off, the status file is uploaded to S3 to signal that the d
 
 
 
-## Frontend Components and Outputs:
+## Frontend Component (App):
     Read User Input
     Update Analysis Data
     Serve Analysis Data
@@ -191,16 +205,31 @@ The near-real time data presented to the user is scraped on-demand from ge-track
 #### Note: There is a difference between buy and sell prices because the Grand Exchange works as a double auction. 
 
 
+## Completed and Future Improvements:
+~~v1.0.0~~ : Completed first project version with functional scripts (no Docker or Airflow)
+
+~~v2.0.0~~ : Dockerized project and implemented CI/CD workflow
+```
+Restructured project repository for ease of implementing Docker
+
+Rewrote Python scripts using the Selenium package to use Requests instead (Selenium + Docker is a headache)
+
+Added Dockerfiles for project components in /build/ folder
+
+Implemented Github workflows to automatically build, verify, and send Docker images to Docker Hub (from Github "test" and "main" branches)
+
+Set up Airflow DAGs to automatically delete old Docker resources and pull the appropriate images from Docker Hub before runtime
+
+Eliminated the use of Amazon Simple Storage Service (S3) to improve runtime efficiency and make it easier for others to run this project
+
+        - Deleted scripts / functions that interacted with S3
+        - Docker images utilize bind mounts, backend-frontend file transfer is now handled in one operation with Airflow STFPOperator
+        - Replaced any lost backend functionalities with new scripts (set_scrape_type.py, trigger_scrape.py)
+        
+Added basic runtime test scripts for backend (post_scrape_test.py, analysis_test.py)
+```
 
 
-## Future Changes:
+v2.1.0 : Complete 100% coverage of runtime unit and integration tests (~75% done)
 
-v1.1.0 : Replace Selenium package in get_near_real_data with requests or other library more compatible with Docker
-
-v1.2.0 : Dockerize frontend components
-
-v1.3.0 : Dockerize backend components
-
-v2.0.0 : Incorporate factorial design in daily analysis
-
-v3.0.0 : Add user interface
+v3.0.0 : Implement a user interface
