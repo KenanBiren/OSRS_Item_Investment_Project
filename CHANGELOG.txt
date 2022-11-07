@@ -10,8 +10,7 @@ Description: detailed description of changes
 
 
 UPCOMING CHANGES:
-    -add a task to verify analysis output after analysis is run
-    -implement docker compose to containerize scripts
+    -ensure 100% test coverage
     -implement factorial design during daily analysis
     -create a user interface
 
