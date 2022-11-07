@@ -3,21 +3,19 @@
 Providing investors with item-by-item investment analysis for Runescape items.
  
 
-# Table Of Contents:
+# Table Of Contents
 1. Introduction
 2. Purpose
-3. Demonstration
-4. Sources of Data
-5. Backend Component (Daily ETL)
-6. Frontend Component (App)
-7. Scheduling and CI/CD Workflow
-8. Completed and Future Improvements
+3. Sources of Data
+4. Backend Component (Daily ETL)
+5. Frontend Component (App)
+6. Completed and Future Improvements
 
 
 
 
 
-## Introduction: 
+## Introduction 
 
 Old School Runescape (OSRS) is an online game released in February 2013 as a reboot of the 2007 version of Runescape. Millions of people play the game, as it offers a wide variety of activities like going on quests, fighting monsters and other players, and leveling up your character's skills. OSRS players can trade each other items for gold coins, and the game has an automated trading system so players can buy or sell items without having to schedule a time to meet and trade.
 
@@ -27,13 +25,13 @@ How do they choose which items to invest in?
 
 
 
-## Purpose:
+## Purpose
 
 The purpose of this project is to help an investor decide if a specific item is a good investment or not. Investment prediction is one of the most complex topics out there, so investors need as much information as possible to make decisions. This project aims to be a multifaceted investment analysis tool that gives investment analysis on an item-by-item basis. It does so by applying that specific item's data to a daily running investment analysis, and serving the results alongside the most current data (I'm calling it near-real-time data, taken from ge-tracker.com).
 
 The purpose of all this is to provide a picture that takes into account the item's historical data on the week, day, and minute-by-minute level. These are the general steps that are taken to accomplish this.
 
-1. Two weeks' worth of price and volume data is scraped daily with Scrapy and Pandas is used to calculate 16 data points for each item.
+1. Two weeks' worth of price and volume data is scraped daily with Scrapy. Pandas is used to analyze 16 attributes for each item.
 ``` 
 If the item has changed in (price, volume)
     consecutively in the past (2, 3, 5, 7) days
@@ -41,18 +39,18 @@ How much the item has changed in (price, volume)
     compared to (1, 3, 7, 14) days ago
 ```
 
-3. The daily analysis is automatically sent to the "App Server" that the user interacts with.
-4. When a user searches for an item, the results of this daily analysis are applied to that item to predict how much it will change in price in the next day.
-5. Item name is searched and data is extracted from ge-tracker.com to provide user with the most up-to-date information on that item.
-6. A graph of price and volume over the past two weeks is presented. Price and volume are plotted on the same graph to show possible trends in interactions.
-
-This project uses Python (Scrapy and Pandas) on an EC2 instance to scrape web data and analyze it. Analyzed data is sent to an S3 bucket, where it can be accessed by the frontend scripts. A file name status_file.csv is used to prevent concurrent upload and download request to S3, and also holds some useful fields that can be used in verification tests.
-
+2. A data summary is created by aggregating the results of data analysis.
+3. Airflow sends the data to the "App Server" that the user interacts with.
+4. When a user searches for an item, the today's data summary is applied to that item's attributes to predict how much it will change in price over the next day.
+5. Item is searched and data is extracted from ge-tracker.com to provide user with the most up-to-date information on that item.
+6. A graph of price and volume over the past two weeks is presented. Price and volume are plotted on the same graph to show possible interactions.
 
 
 
 
-## Sources of Data:
+
+
+## Sources of Data
 There are many sources that give data on items that OSRS investors might want. Here are the sources of data used in this project (showing example item Abyssal Whip).
 
 
@@ -74,10 +72,10 @@ https://www.ge-tracker.com/item/abyssal-whip
 This site shows near-real time data. This site is similar to the Wiki API, but is used because it includes other data fields such as "Buying Quantity (1 hour)" and "Selling Quantity (1 hour)" which could be very useful information for users.
 
 
-## Backend Component (Daily ETL):
-    Daily Scrape
-    Daily Analysis
-    Processing
+## Backend Component (Daily ETL)
+    Extract: Daily Scrape
+    Transform: Daily Analysis
+    Load: Upload to App Server
 
 
 #### Mention: The backend of this project is based off of my [previous ELT pipeline](https://github.com/Kenan-Biren/OSRS_Investment_Project)
@@ -89,19 +87,19 @@ After some thought I realized that I could make this a lot more interesting by p
 
 
 
-### Daily Scrape:
+### Extract: Daily Scrape
 
 This project uses the Scrapy framework to extract data from web sources. There are two spiders, one scrapes one days' worth of data and the other scrapes two weeks' worth of data. The two week spider is for when new items are added to the game and for the very first scrape. A pre-analysis script goes along with each spider, which takes the spider output and formats to 14day_price.csv and 14day_vol.csv to prepare for analysis.
 14day_price.csv and 14day_vol.csv contain the past 14 days of price and volume data for all items, indexed by correct dates.
 
 
 
-### Daily Analysis:
+### Transform: Daily Analysis
 
-The daily analysis takes 14 days of raw price and volume data for every item in game and calculates attributes that can be analyzed for each item. 
+The daily analysis takes the past 14 days of raw price and volume data for each item and calculates attributes.
 
 
-Data Analysis Calculated Attributes:
+Calculated Attributes:
 
     two_day_run_p = whether daily trading price has increased consecutively in the past two days. 1 = True, 0 = False
     two_day_run_v = whether daily volume has increased consecutively in the past two days. 1 = True, 0 = False
@@ -112,8 +110,8 @@ Data Analysis Calculated Attributes:
     seven_day_run_p = ...
     seven_day_run_v = ...
 
-    one_day_avg_p = increase (or decrease) in daily average price compared to yesterday
-    one_day_avg_v = increase (or decrease) in volume compared to yesterday
+    one_day_avg_p = % change in daily average price compared to yesterday
+    one_day_avg_v = % change in volume compared to yesterday
     three_day_avg_p = ...                            compared to three days ago
     three_day_avg_v = ...
     seven_day_avg_p = ...
@@ -124,38 +122,38 @@ Data Analysis Calculated Attributes:
 
 The average effect of each attribute on price change is calculated by averaging recent price change (same as one_day_avg_p) across all items where that factor applies. This produces a data_summary file which lists each attribute, and how much % change it is expected to make in items that have that attribute. For example, if the average price change for all items with two_day_run_p=1 (True) is 2%, a specific item that has two_day_run_p=1 will be assumed to increase 2% in the next day.
 
-When a user searches for an item, that item's attribute data is multiplied by the average effect of every factor. This results in a prediction of % price increase (or decrease).
+Data Summary:
 
 
-### Processing:
-
-Every day data is scraped from the web to prepare for analysis. Most of the time only one day's worth of data is collected and prepared for analysis. But if new items are added to the game, or the pipeline needs to start for the first time, two weeks' worth of data is collected and prepared for analysis. Once data is ready for analysis, the backend signals that data analysis has started by editing and uploading the status file to S3.
-
-Data analysis is triggered which produces today's analysis table and data summary. All files pertaining to today's data are saved in appropriate folders, then uploaded to S3 for use by the frontend. If tomorrow is the start of the next week, the folder for this week's data is also uploaded to S3, and the weekly scrape is triggered to check if new items have been added to the game.
-
-To finish everything off, the status file is uploaded to S3 to signal that the daily analysis is done, and new data is ready to be downloaded. 
+|date|two_day_run_p|three_day_run_p|five_day_run_p|seven_day_run_p|two_day_run_v|three_day_run_v|five_day_run_v|seven_day_run_v|one_day_avg_p|three_day_avg_p|seven_day_avg_p|fourteen_day_avg_p|one_day_avg_v|three_day_avg_v|seven_day_avg_v|fourteen_day_avg_v|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|2022/10/23|0.00453|0.00195|0.00105|0.00037|-0.00091|-2e-05|0.0|0.0|0.00198|0.00198|0.00093|0.00154|-0.00116|0.00011|0.00069|-0.00057|
 
 
 
+Later when a user searches for an item, that item's attribute data is multiplied by the average effect of every factor. This results in a prediction of % price increase (or decrease).
 
 
-## Frontend Component (App):
+### Load: Upload to App Server
+
+The Airflow DAG that previously triggered the daily scrape and analysis now triggers file transfer to the App Server via the [SFTPOperator](https://airflow.apache.org/docs/apache-airflow-providers-sftp/stable/_api/airflow/providers/sftp/operators/sftp/index.html)
+
+
+
+
+
+## Frontend Component (App)
     Read User Input
-    Update Analysis Data
     Serve Analysis Data
-    Serve Near-real Data
+    Serve Near-Real Data
 
-### Read User Input: 
+### Read User Input 
 
-User is prompted to search for an item. If no item matches, the user given a list of item names that they might have been trying to spell.
+User is prompted to search for an item. If no item matches, the user given a list of a couple item names that they might have been trying to spell. Right after a match is made, the local filesystem is checked to see when data has been updated, printing a warning for the user if it is out of date.
 
-### Update Analysis Data: 
+### Serve Analysis Data 
 
-After a user input is matched to an item name, local filesystem is checked to see if the data has been updated today. If not, download it from S3 and use the updated data.
-
-### Serve Analysis Data: 
-
-Pandas library is used to multiply item name's analysis table data with today's data summary, giving a prediction for how much it will go up in price within the next day. A graph is created comparing that item's price and volume data for the past two weeks.
+Pandas library is used to multiply item name's analysis table data with today's data summary, giving a prediction for how much it will go up in price within the next day. A table is printed explaining some of the logic behind the calculation. A graph is created comparing that item's price and volume data for the past two weeks.
 
 
 | Attribute  | Has Effect? | Effect
@@ -182,7 +180,7 @@ Pandas library is used to multiply item name's analysis table data with today's 
 
 
 ### Serve Near-real Data: 
-The near-real time data presented to the user is scraped on-demand from ge-tracker.com using Selenium.
+After analysis data is served, a Python script using the Requests library scrapes near-real-time data from [ge-tracker.com](https://www.ge-tracker.com/item/abyssal-whip)
 
 
     Current Price: 1,554,956 (average price item being bought/sold at)
@@ -205,14 +203,14 @@ The near-real time data presented to the user is scraped on-demand from ge-track
 #### Note: There is a difference between buy and sell prices because the Grand Exchange works as a double auction. 
 
 
-## Completed and Future Improvements:
+## Completed and Future Improvements
 ~~v1.0.0~~ : Completed first project version with functional scripts (no Docker or Airflow)
 
 ~~v2.0.0~~ : Dockerized project and implemented CI/CD workflow
 ```
 Restructured project repository for ease of implementing Docker
 
-Rewrote Python scripts using the Selenium package to use Requests instead (Selenium + Docker is a headache)
+Rewrote scripts using the Selenium package to use Requests instead (Selenium + Docker is a headache)
 
 Added Dockerfiles for project components in /build/ folder
 
@@ -230,6 +228,8 @@ Added basic runtime test scripts for backend (post_scrape_test.py, analysis_test
 ```
 
 
-v2.1.0 : Complete 100% coverage of runtime unit and integration tests (~75% done)
+v2.1.0 : Diagram possible failure modes and expand current runtime tests to ensure 100% coverage
+
+v2.2.0 : Implement factorial design of experiments in daily data analysis
 
 v3.0.0 : Implement a user interface
