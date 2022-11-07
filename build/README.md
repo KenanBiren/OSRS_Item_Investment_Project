@@ -3,7 +3,7 @@
 ## Run this project via command line 
 Start with a local or virtual machine with Docker installed.
 #### 1. Make a directory titled "OSRS_Item_Investment_Project" and navigate to it, or copy this repo and navigate to the project folder
-#### 2. Delete previous Docker images and containers (optional, highly recommended) 
+#### 2. Delete previous Docker images and containers (highly recommended, not needed first time)
 
 Backend
 ```
