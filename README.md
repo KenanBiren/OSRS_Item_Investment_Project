@@ -5,11 +5,12 @@ Providing investors with item-by-item investment analysis for Runescape items.
 
 # Table Of Contents
 1. Introduction
-2. Purpose
-3. Sources of Data
-4. Backend Component (Daily ETL)
-5. Frontend Component (App)
-6. Completed and Future Improvements
+2. Purpose and Summary
+3. Architecture Diagram
+4. Sources of Data
+5. Backend Component (Daily ETL)
+6. Frontend Component (App)
+7. Completed and Future Improvements
 
 
 
@@ -25,11 +26,11 @@ How do they choose which items to invest in?
 
 
 
-## Purpose
+## Purpose and Summary
 
 The purpose of this project is to help an investor decide if a specific item is a good investment or not. Investment prediction is one of the most complex topics out there, so investors need as much information as possible to make decisions. This project aims to be a multifaceted investment analysis tool that gives investment analysis on an item-by-item basis. It does so by applying that specific item's data to a daily running investment analysis, and serving the results alongside the most current data (I'm calling it near-real-time data, taken from ge-tracker.com).
 
-The purpose of all this is to provide a picture that takes into account the item's historical data on the week, day, and minute-by-minute level. These are the general steps that are taken to accomplish this.
+The purpose of all this is to provide a picture that takes into account the item's historical data on the week, day, and minute-by-minute level. These are the steps that this project takes.
 
 1. Two weeks' worth of price and volume data is scraped daily with Scrapy. Pandas is used to analyze 16 attributes for each item.
 ``` 
@@ -45,6 +46,12 @@ How much the item has changed in (price, volume)
 5. Item is searched and data is extracted from ge-tracker.com to provide user with the most up-to-date information on that item.
 6. A graph of price and volume over the past two weeks is presented. Price and volume are plotted on the same graph to show possible interactions.
 
+
+
+## Architecture Diagram
+
+
+<img width="700" alt="Screen Shot 2022-11-06 at 10 05 40 PM" src="https://user-images.githubusercontent.com/116853630/200237471-012691ed-5d99-453a-b551-9af21dc6e4da.png">
 
 
 
