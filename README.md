@@ -19,7 +19,7 @@ Providing investors with item-by-item investment analysis for Runescape items.
 
 ## Introduction 
 
-Old School Runescape (OSRS) is an online game released in February 2013 as a reboot of the 2007 version of Runescape. Millions of people play the game, as it offers a wide variety of activities like going on quests, fighting monsters and other players, and leveling up your character's skills. OSRS players can trade each other items for gold coins, and the game has an automated trading system so players can buy or sell items without having to schedule a time to meet and trade.
+Old School Runescape (OSRS) is an online game released in February 2013 as a reboot of the 2007 version of Runescape. Millions of people play the game, which offers a wide variety of activities like going on quests, fighting monsters and other players, and leveling up your character's skills. OSRS players can trade each other items for gold coins, and the game has an automated trading system so players can buy or sell items without having to meet in the same location to conduct the trade.
 
 The automated trading system is called the Grand Exchange. One player puts their item into the system, one player their coins, and it conducts the trade. Because almost all trades happen on the Grand Exchange, players often in try to observe trends in price, and invest in items that will go up. Some players make millions of coins each day by choosing the correct items. 
 
@@ -29,9 +29,7 @@ How do they choose which items to invest in?
 
 ## Purpose and Summary
 
-The purpose of this project is to help an investor decide if a specific item is a good investment or not. This project aims to be a multifaceted investment analysis tool that gives investment analysis on an item-by-item basis. It does so by applying that specific item's data to a daily running investment analysis, and serving the prediction results alongside the most up-to-date data for that item.
-
-The purpose of this is to provide a picture that takes into account the item's historical data on the week, day, and minute-by-minute level. Below are the steps that this project takes.
+The purpose of this project is to help an investor decide if a specific item is a good investment or not. This project aims to be an investment analysis tool that gives investment analysis on an item-by-item basis. It does so by running a daily market-wide analysis on a backend server (ETL), then sending its results to the frontend server (App) where it is accessible by users. Users search for a specific item and the daily market-wide analysis is applied to make an item-specific prediction. The item's most current data is also presented alongside a visualization of historical data. Below are the steps that this project takes.
 
 1. Two weeks' worth of price and volume data is scraped daily with Scrapy. Pandas is used to analyze 16 attributes for each item.
 ``` 
@@ -68,17 +66,17 @@ There are many sources that give data on items that OSRS investors might want. H
 
 [Official Old School Runescape Website](https://secure.runescape.com/m=itemdb_oldschool/Abyssal+whip/viewitem?obj=4151)
 
-This website shows the daily average price and volume per item. This source gives daily average data for each item, unlike the next two sources which give near-real-time data. Therefore this website is used as the data source for the daily-running investment analysis.
+This website shows the daily average price and volume per item. This source gives daily average values for price and volume data, unlike the next two sources which give most-up-to-date values. Therefore this website is used as the data source for the daily-running investment analysis, as the analysis is calculated over two weeks' of data.
 
 
 [Old School Wiki Database](https://prices.runescape.wiki/osrs/item/4151)
 
-This site shows up-to-date price/volume data and a few other basic fields like "Buy Limit". This site is a fast API that is a great source to get a master list of all items in the game, with the ability to use the API to pre-filter based on specific values (this may be utiilized in the future).
+This site shows up-to-date price/volume data and a few other basic fields like "Buy Limit". This site is a fast API that is current used to get a master list of all items in the game. Wiki API users have the ability to use the API to pre-filter based on specific values (this may be utiilized in the future).
 
 
 [ge-tracker.com](https://www.ge-tracker.com/item/abyssal-whip)
 
-This site shows near-real time data. This site is similar to the Wiki API, but is used because it includes other data fields such as "Buying Quantity (1 hour)" and "Selling Quantity (1 hour)" which could be very useful information for investors.
+This site shows near-real time data. This site is used because it includes other data fields such as "Buying Quantity (1 hour)" and "Selling Quantity (1 hour)" which could be very useful information for investors.
 
 
 ## Backend Component (Daily ETL)
@@ -91,14 +89,16 @@ This site shows near-real time data. This site is similar to the Wiki API, but i
 
 
 A major goal of that project was to develop more experience with using cloud technologies (AWS) in a data pipeline. Upon finishing that project, I wanted to implement a CI/CD workflow Github and Docker, but I didn't really know what improvements I wanted to implement.
-After some thought I realized that I could make this a lot more interesting by providing users an item-by-item analysis instead of a general daily recommendations list. Having a more defined focus for the end product has allowed me to easily think ahead to what features users might want, and decide how to restructure the project to leverage the use of Github and Docker in a CI/CD workflow.
+After some thought I realized that I could make this a lot more interesting by providing users an item-by-item analysis instead of a general daily recommendations list. Having a more defined focus for the end product has allowed me to easily think ahead to what features users might want, and decide how to restructure the project to leverage the use of Github and Docker in a CI/CD workflow. 
+
+My next steps are to improve the accuracy of the daily investment analysis (planning to use factorial analysis) and adding a user interface (likely website first, thinking about an app). 
 
 
 
 
 ### Extract: Daily Scrape
 
-This project uses the Scrapy framework to extract data from web sources. There are two spiders, one scrapes one day's worth of data and the other scrapes two weeks' worth of data. The two week spider is for when new items are added to the game and for the very first scrape. A post-scrape script goes along with each spider, which takes the spider output and formats them into 14day_price.csv and 14day_vol.csv to prepare for analysis. 14day_price.csv and 14day_vol.csv contain the past 14 days of price and volume data for all items, indexed by correct dates.
+This project uses the Scrapy framework to extract data from web sources. There are two spiders, one scrapes one day's worth of data and the other scrapes two weeks' worth of data. The two week spider is for the very first scrape or if the pipeline needs to be restarted. A post-scrape script goes along with each spider, which takes the spider output and formats them into 14day_price.csv and 14day_vol.csv to prepare for analysis. 14day_price.csv and 14day_vol.csv contain the past 14 days of price and volume data for all items, with columns names (name, *TODAY'S DATE*, *YESTERDAY'S DATE*,...)
 
 
 
@@ -135,7 +135,7 @@ Data Summary:
 
 |date|two_day_run_p|three_day_run_p|five_day_run_p|seven_day_run_p|two_day_run_v|three_day_run_v|five_day_run_v|seven_day_run_v|one_day_avg_p|three_day_avg_p|seven_day_avg_p|fourteen_day_avg_p|one_day_avg_v|three_day_avg_v|seven_day_avg_v|fourteen_day_avg_v|
 |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
-|2022/10/22|0.00453|0.00195|0.00105|0.00037|-0.00091|-2e-05|0.0|0.0|0.00198|0.00198|0.00093|0.00154|-0.00116|0.00011|0.00069|-0.00057|
+|2022/10/22|0.00453|0.00195|0.00105|0.00037|-0.00091|0|0.0|0.0|0.00198|0.00198|0.00093|0.00154|-0.00116|0.00011|0.00069|-0.00057|
 
 
 
