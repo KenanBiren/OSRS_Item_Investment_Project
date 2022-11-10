@@ -1,0 +1,81 @@
+Docker commands to clean up old resources, pull new image from Docker Hub,
+run the image
+
+
+
+APP_TEST
+
+docker image rm kenanbiren/osrs_item_investment_project:app_test -f
+
+docker container prune -f                                   
+
+docker pull kenanbiren/osrs_item_investment_project:app_test
+
+docker run -ti --platform=linux/amd64 --env=DISPLAY -v "$PWD":/OSRS_Item_Investment_Project kenanbiren/osrs_item_investment_project:app_test
+
+
+
+APP
+
+docker image rm kenanbiren/osrs_item_investment_project:app -f
+
+docker container prune -f                                   
+
+docker pull kenanbiren/osrs_item_investment_project:app
+
+docker run -ti --platform=linux/amd64 --env=DISPLAY -v "$PWD":/OSRS_Item_Investment_Project kenanbiren/osrs_item_investment_project:app
+
+
+
+
+
+
+EXTRACT_TEST
+
+docker image rm kenanbiren/osrs_item_investment_project:extract_test -f
+
+docker container prune -f                                   
+
+docker pull kenanbiren/osrs_item_investment_project:extract_test
+
+docker run -v "$PWD":/OSRS_Item_Investment_Project kenanbiren/osrs_item_investment_project:extract_test
+
+
+
+EXTRACT
+
+docker image rm kenanbiren/osrs_item_investment_project:extract -f
+
+docker container prune -f                                   
+
+docker pull kenanbiren/osrs_item_investment_project:extract
+
+docker run -v "$PWD":/OSRS_Item_Investment_Project kenanbiren/osrs_item_investment_project:extract
+
+
+
+
+
+
+
+TRANSFORM_TEST
+
+docker image rm kenanbiren/osrs_item_investment_project:transform_test -f
+
+docker container prune -f                                   
+
+docker pull kenanbiren/osrs_item_investment_project:transform_test
+
+docker run -v "$PWD":/OSRS_Item_Investment_Project kenanbiren/osrs_item_investment_project:transform_test
+
+
+
+TRANSFORM
+
+docker image rm kenanbiren/osrs_item_investment_project:transform -f
+
+docker container prune -f                                   
+
+docker pull kenanbiren/osrs_item_investment_project:transform
+
+docker run -v "$PWD":/OSRS_Item_Investment_Project kenanbiren/osrs_item_investment_project:transform

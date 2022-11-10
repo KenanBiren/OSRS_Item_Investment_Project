@@ -1,6 +1,0 @@
-docker compose yaml files for frontend and backend components
-
-
-
-
-

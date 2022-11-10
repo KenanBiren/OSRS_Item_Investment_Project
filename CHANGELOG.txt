@@ -5,23 +5,51 @@ Date, Time: YYYY-MM-DD HHmm timezone
 Author: name
 Title: (MAJOR/MINOR/BUGFIX) title
 Description: detailed description of changes
-Deprecations or Removals: detailed description of any components that become
-deprecated or fully removed on this version
 --------------------------------------------------------------------------------
 
 
 
 UPCOMING CHANGES:
-    -add a task to verify analysis output after analysis is run
-    -implement docker compose to containerize scripts
+    -ensure 100% test coverage
     -implement factorial design during daily analysis
     -create a user interface
 
 
+New Version: v2.0.0
+Date, Time: 2022-11-07 1223 PST
+Author: Kenan Biren
+Title: Dockerized project and implemented CI/CD workflow
+Description: 
+
+Restructured project repository for ease of implementing Docker
+
+Rewrote scripts using the Selenium package to use Requests instead (Selenium + Docker is a headache)
+
+Added Dockerfiles for project components in /build/ folder
+
+Implemented Github workflows to automatically build, verify, and send Docker images to Docker Hub (from Github "test" and "main" branches)
+
+Set up Airflow DAGs to automatically delete old Docker resources and pull the appropriate images from Docker Hub before runtime
+
+Eliminated the use of Amazon Simple Storage Service (S3) to improve runtime efficiency and make it easier for others to run this project
+
+        - Deleted scripts / functions that interacted with S3
+        - Docker images utilize bind mounts, backend-frontend file transfer is now handled in one operation with Airflow STFPOperator
+        - Replaced any lost backend functionalities with new scripts (set_scrape_type.py, trigger_scrape.py)
+        
+Added basic runtime test scripts for backend (post_scrape_test.py, analysis_test.py)
 
 
 
+------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+New Version: v1.0.0
+Date, Time: 2022-10-31 1822 PST
+Author: Kenan Biren
+Title: Implemented first version with functioning scripts (no Docker or Airflow)
+Description: Uploaded all (backend and frontend) functional scripts, without any scheduling or CI/CD implementation. Backend: extraction spidersusing Scrapy, analysis scripts using Pandas. Frontend: App script to serve user.
+--------------------------------------------------------------------------------
 
 
 
@@ -36,7 +64,6 @@ Date, Time: 2022-06-15 1743 PST
 Author: Kenan Biren
 Title: (BUGFIX) Bug on post_scrape_analysis.py
 Description: ...
-Deprecations or Removals: ...
 --------------------------------------------------------------------------------
 
 
@@ -45,7 +72,6 @@ Date, Time: 2022-06-01 0455 PST
 Author: Kenan Biren
 Title: (MINOR) Improve run time efficiency of process_backend.py
 Description: ...
-Deprecations or Removals: ...
 --------------------------------------------------------------------------------
 
 
@@ -54,7 +80,6 @@ Date, Time: 2022-05-26 1351 PST
 Author: Kenan Biren
 Title: (MAJOR) Implement user interface
 Description: ...
-Deprecations or Removals: ...
 --------------------------------------------------------------------------------
 
 

@@ -1,3 +1,4 @@
 scrapy
 datetime
 timedelta
+pandas
