@@ -45,7 +45,7 @@ How much the item has changed in (price, volume)
 5. Item is searched and data is extracted from ge-tracker.com to provide user with the most up-to-date information on that item.
 6. A graph of price and volume over the past two weeks is presented. Price and volume are plotted on the same graph to show possible interactions.
 
-Example outputs are [shown below](https://github.com/KenanBiren/OSRS_Item_Investment_Project/tree/main#serve-analysis-data)
+Example outputs are [shown below](https://github.com/KenanBiren/OSRS_Item_Investment_Project#serve-analysis-data)
 
 ## Architecture Diagram
 
