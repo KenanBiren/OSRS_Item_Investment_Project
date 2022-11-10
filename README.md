@@ -71,7 +71,7 @@ This website shows the daily average price and volume per item. This source give
 
 [Old School Wiki Database](https://prices.runescape.wiki/osrs/item/4151)
 
-This site shows up-to-date price/volume data and a few other basic fields like "Buy Limit". This site is a fast API that is current used to get a master list of all items in the game. Wiki API users have the ability to use the API to pre-filter based on specific values (this may be utiilized in the future).
+This site shows up-to-date price/volume data and a few other basic fields like "Buy Limit". This site is a fast API that is used to get a master list of all items in the game. Users of this site have the ability to use the API to pre-filter based on specific values (this may be utiilized in the future).
 
 
 [ge-tracker.com](https://www.ge-tracker.com/item/abyssal-whip)
